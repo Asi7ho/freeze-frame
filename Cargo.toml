@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "freeze-frame-core",
+    "freeze-frame-engine",
+    "freeze-frame-ui",
+]
