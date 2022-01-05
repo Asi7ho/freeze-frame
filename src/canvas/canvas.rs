@@ -1,5 +1,5 @@
-use crate::{data::AppState, tool};
-use druid::{widget::prelude::*, Color, Point};
+use crate::{data::AppState, tool::brush};
+use druid::{widget::prelude::*, Color, Point, Rect};
 
 pub struct Canvas {
     width: f64,
@@ -7,7 +7,7 @@ pub struct Canvas {
     background_color: Color,
     is_drawing: bool,
     start_drawing: bool,
-    brush: tool::brush::freehand::Freehand,
+    brush: brush::freehand::Freehand,
     point: Option<Point>,
 }
 
@@ -19,7 +19,7 @@ impl Canvas {
             background_color: color,
             is_drawing: false,
             start_drawing: false,
-            brush: tool::brush::freehand::Freehand::new(1.0, Color::BLACK),
+            brush: brush::freehand::Freehand::new(1.0, Color::BLACK),
             point: None,
         };
     }
@@ -93,11 +93,15 @@ impl Widget<AppState> for Canvas {
         // and we only want to clear this widget's area.
         let size = ctx.size();
         let rect = size.to_rect();
+        ctx.fill(rect, &Color::grey(0.4));
+
+        let center_x = size.width / 2.0;
+        let center_y = size.height / 2.0;
+        let rect = Rect::from_center_size((center_x, center_y), (self.width, self.height));
         ctx.fill(rect, &self.background_color);
 
         if self.is_drawing {
-            let mut point = self.point.unwrap();
-            point.y = point.y - 175.0;
+            let point = self.point.unwrap();
             if self.start_drawing {
                 self.brush.start_draw(point);
                 self.start_drawing = false;
