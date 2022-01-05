@@ -1,8 +1,9 @@
-use druid::widget::{prelude::*, Flex, SizedBox};
-use druid::{Color, Widget, WidgetExt};
+use druid::widget::{prelude::*, Flex, Label, SizedBox};
+use druid::{Widget, WidgetExt};
 
 use crate::canvas::canvas::Canvas;
 use crate::data::AppState;
+use crate::palette::palette::Palette;
 
 struct Rebuilder {
     inner: Box<dyn Widget<AppState>>,
@@ -16,7 +17,7 @@ impl Rebuilder {
     }
 
     fn rebuild_inner(&mut self, data: &AppState) {
-        self.inner = build_widget(data);
+        self.inner = build_canvas(data);
     }
 }
 
@@ -59,18 +60,24 @@ impl Widget<AppState> for Rebuilder {
 }
 
 /// Build the canvas
-fn build_widget(state: &AppState) -> Box<dyn Widget<AppState>> {
+fn build_canvas(state: &AppState) -> Box<dyn Widget<AppState>> {
     let canvas = Canvas::new(
         state.canvas_width,
         state.canvas_height,
         state.canvas_background_color.clone(),
     );
 
-    let sized = SizedBox::new(canvas);
-    sized.border(Color::BLACK, 5.0).center().boxed()
+    return SizedBox::new(canvas).center().boxed();
+}
+
+fn build_palette() -> impl Widget<AppState> {
+    let label: Label<AppState> = Label::new("Color Palette");
+    Flex::column().with_child(label).with_child(Palette::new())
 }
 
 /// Build the ui
 pub fn build_ui() -> impl Widget<AppState> {
-    Flex::row().with_child(Rebuilder::new().center())
+    Flex::row()
+        .with_flex_child(Rebuilder::new().center(), 1.0)
+        .with_child(build_palette())
 }

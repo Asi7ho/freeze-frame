@@ -3,6 +3,7 @@
 
 mod canvas;
 mod data;
+mod palette;
 mod tool;
 mod view;
 
