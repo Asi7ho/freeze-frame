@@ -1,23 +1,71 @@
-// On Windows platform, don't show a console when opening the app.
-#![windows_subsystem = "windows"]
+use iced::{window, Element, Sandbox, Settings};
+use widgets::header::HeaderState;
 
-mod canvas;
-mod data;
-mod palette;
-mod tool;
-mod view;
+mod widgets;
 
-use data::AppState;
-use druid::{AppLauncher, Color, LocalizedString, WindowDesc};
-use view::build_ui;
+// Launch desktop app
+fn main() -> iced::Result {
+    let settings = Settings {
+        window: window::Settings {
+            min_size: Some((1330, 700)),
+            ..window::Settings::default()
+        },
+        antialiasing: true,
+        ..Settings::default()
+    };
 
-pub fn main() {
-    let data = AppState::new(800.0, 450.0, Color::WHITE);
-    let window = WindowDesc::new(build_ui)
-        .title(LocalizedString::new("Freeze Frame"))
-        .window_size((1400.0, 800.0));
-    AppLauncher::with_window(window)
-        .use_simple_logger()
-        .launch(data)
-        .expect("launch failed");
+    FreezeFrame::run(settings)
+}
+
+#[derive(Default)]
+pub struct FreezeFrame {
+    header_state: HeaderState,
+}
+
+#[derive(Debug, Clone)]
+
+pub enum InteractionMessage {
+    HeaderInteraction(widgets::header::HeaderMessage),
+    Ignore,
+}
+
+#[derive(Debug, Clone)]
+pub enum FreezeFrameMessage {
+    Interaction(InteractionMessage),
+}
+
+impl Sandbox for FreezeFrame {
+    type Message = FreezeFrameMessage;
+
+    fn new() -> Self {
+        Self {
+            header_state: HeaderState {
+                scene_title_input: String::from("Scene title"),
+                ..HeaderState::default()
+            },
+        }
+    }
+
+    fn title(&self) -> String {
+        String::from("Freeze Frame")
+    }
+
+    fn update(&mut self, message: FreezeFrameMessage) {
+        match message {
+            FreezeFrameMessage::Interaction(interaction) => match interaction {
+                InteractionMessage::HeaderInteraction(header_interaction) => {
+                    match header_interaction {
+                        widgets::header::HeaderMessage::SceneTitleChange(scene_title) => {
+                            self.header_state.scene_title_input = scene_title;
+                        }
+                    }
+                }
+                InteractionMessage::Ignore => (),
+            },
+        }
+    }
+
+    fn view(&mut self) -> Element<FreezeFrameMessage> {
+        return widgets::header::header::view(&mut self.header_state);
+    }
 }
