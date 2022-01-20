@@ -1,38 +1,45 @@
-use iced::{text_input, Container, Element, Length, Row};
+use iced::{Align, Container, Element, Row};
 
-use crate::widgets::header::scene_title::SceneTitle;
-use crate::{FreezeFrameMessage, InteractionMessage};
+use crate::widgets::header::brush_tools::{BrushControls, BrushFilter};
+use crate::widgets::header::scene_title::TitleControls;
+use crate::FreezeFrameMessage;
 
 use crate::widgets::header::HeaderStyle;
 
 #[derive(Debug, Default)]
 pub struct HeaderState {
     pub scene_title_input: String,
-    pub scene_title_state: text_input::State,
+    pub scene_title_controls: TitleControls,
+    pub brush_filter: BrushFilter,
+    pub brush_controls: BrushControls,
 }
 
 #[derive(Debug, Clone)]
 pub enum HeaderMessage {
     SceneTitleChange(String),
+    BrushControlsChange(BrushFilter),
 }
 
 pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
-    let scene_title = SceneTitle::new(
-        &header_state.scene_title_input,
-        &mut header_state.scene_title_state,
-        |s| {
-            FreezeFrameMessage::Interaction(InteractionMessage::HeaderInteraction(
-                HeaderMessage::SceneTitleChange(s),
-            ))
-        },
-    )
-    .scene_title
-    .size(26)
-    .padding(10)
-    .width(Length::Fill)
-    .style(HeaderStyle);
+    // Scene title
+    let scene_title = header_state
+        .scene_title_controls
+        .view(header_state.scene_title_input.clone());
 
-    let header = Container::new(Row::new().push(scene_title)).style(HeaderStyle);
+    // Brush tools
+    let brush_tools = header_state.brush_controls.view(header_state.brush_filter);
+
+    // Color palette
+
+    // Extra tools
+
+    let header = Container::new(
+        Row::new()
+            .push(scene_title)
+            .push(brush_tools)
+            .align_items(Align::Center),
+    )
+    .style(HeaderStyle);
 
     return header.into();
 }

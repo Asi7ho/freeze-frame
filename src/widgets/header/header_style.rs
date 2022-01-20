@@ -1,4 +1,4 @@
-use iced::{container, text_input, Color};
+use iced::{button, container, text_input, Color};
 
 pub struct HeaderStyle;
 
@@ -43,5 +43,33 @@ impl text_input::StyleSheet for HeaderStyle {
 
     fn selection_color(&self) -> Color {
         Color::from_rgb8(64, 64, 64)
+    }
+}
+
+pub enum HeaderButtonStyle {
+    HeaderButtonSelectedStyle,
+    HeaderButtonDefaultStyle,
+}
+
+impl button::StyleSheet for HeaderButtonStyle {
+    fn active(&self) -> button::Style {
+        match self {
+            HeaderButtonStyle::HeaderButtonSelectedStyle => button::Style {
+                shadow_offset: Default::default(),
+                background: Some(Color::from_rgba8(187, 182, 197, 0.15).into()),
+                border_radius: 10.0,
+                border_width: 0.0,
+                border_color: Color::TRANSPARENT,
+                text_color: Color::TRANSPARENT,
+            },
+            HeaderButtonStyle::HeaderButtonDefaultStyle => button::Style {
+                shadow_offset: Default::default(),
+                background: None,
+                border_radius: 10.0,
+                border_width: 0.0,
+                border_color: Color::TRANSPARENT,
+                text_color: Color::TRANSPARENT,
+            },
+        }
     }
 }

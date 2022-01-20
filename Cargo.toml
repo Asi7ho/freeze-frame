@@ -8,4 +8,4 @@ edition = "2021"
 
 [dependencies.iced]
 version = "0.3.0"
-features = ["canvas"]
+features = ["canvas", "svg"]

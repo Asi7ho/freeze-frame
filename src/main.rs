@@ -1,6 +1,7 @@
 use iced::{window, Element, Sandbox, Settings};
 use widgets::header::HeaderState;
 
+mod utils;
 mod widgets;
 
 // Launch desktop app
@@ -57,6 +58,9 @@ impl Sandbox for FreezeFrame {
                     match header_interaction {
                         widgets::header::HeaderMessage::SceneTitleChange(scene_title) => {
                             self.header_state.scene_title_input = scene_title;
+                        }
+                        widgets::header::HeaderMessage::BrushControlsChange(filter) => {
+                            self.header_state.brush_filter = filter
                         }
                     }
                 }
