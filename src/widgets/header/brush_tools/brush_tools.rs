@@ -5,13 +5,10 @@ use crate::{
     FreezeFrameMessage, InteractionMessage,
 };
 
-use crate::utils::svg::{BRUSH, ERASER, FILL, GEOMETRY, POINTER};
-
-const ICON_SIZE: u16 = 16;
+use crate::utils::svg::{BRUSH, ERASER, FILL, GEOMETRY, ICON_SIZE, POINTER, TEXT};
 
 pub struct BrushTool<'a> {
     pub brush_button: Button<'a, FreezeFrameMessage>,
-    pub active: bool,
 }
 
 impl<'a> BrushTool<'a> {
@@ -21,7 +18,6 @@ impl<'a> BrushTool<'a> {
     {
         Self {
             brush_button: Button::new(state, content),
-            active: false,
         }
     }
 }
@@ -31,8 +27,9 @@ pub enum BrushFilter {
     Pointer,
     Brush,
     Eraser,
-    Fill,
     Geometry,
+    Text,
+    Fill,
 }
 
 impl Default for BrushFilter {
@@ -43,21 +40,23 @@ impl Default for BrushFilter {
 
 #[derive(Debug, Default, Clone)]
 pub struct BrushControls {
-    pub scene_pointer_state: button::State,
-    pub scene_brush_state: button::State,
-    pub scene_eraser_state: button::State,
-    pub scene_geometry_state: button::State,
-    pub scene_fill_state: button::State,
+    pub pointer_state: button::State,
+    pub brush_state: button::State,
+    pub eraser_state: button::State,
+    pub geometry_state: button::State,
+    pub text_state: button::State,
+    pub fill_state: button::State,
 }
 
 impl BrushControls {
     pub fn view(&mut self, current_brush: BrushFilter) -> Element<FreezeFrameMessage> {
         let BrushControls {
-            scene_pointer_state,
-            scene_brush_state,
-            scene_eraser_state,
-            scene_geometry_state,
-            scene_fill_state,
+            pointer_state,
+            brush_state,
+            eraser_state,
+            geometry_state,
+            text_state,
+            fill_state,
         } = self;
 
         let filter_button = |state, icon_byte, filter, current_filter| {
@@ -83,31 +82,37 @@ impl BrushControls {
             Row::new()
                 .spacing(5)
                 .push(filter_button(
-                    scene_pointer_state,
+                    pointer_state,
                     POINTER,
                     BrushFilter::Pointer,
                     current_brush,
                 ))
                 .push(filter_button(
-                    scene_brush_state,
+                    brush_state,
                     BRUSH,
                     BrushFilter::Brush,
                     current_brush,
                 ))
                 .push(filter_button(
-                    scene_eraser_state,
+                    eraser_state,
                     ERASER,
                     BrushFilter::Eraser,
                     current_brush,
                 ))
                 .push(filter_button(
-                    scene_geometry_state,
+                    geometry_state,
                     GEOMETRY,
                     BrushFilter::Geometry,
                     current_brush,
                 ))
                 .push(filter_button(
-                    scene_fill_state,
+                    text_state,
+                    TEXT,
+                    BrushFilter::Text,
+                    current_brush,
+                ))
+                .push(filter_button(
+                    fill_state,
                     FILL,
                     BrushFilter::Fill,
                     current_brush,

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 20 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-2,-4)">
+        <g id="Icons">
+            <g id="Rounded">
+                <g id="Editor">
+                    <g id="_-Round---Editor---text_fields" serif:id="-Round-/-Editor-/-text_fields">
+                        <g>
+                            <path id="Path" d="M0,0L24,0L24,24L0,24L0,0Z" style="fill:none;"/>
+                            <path id="🔹-Icon-Color" d="M2.5,5.5C2.5,6.33 3.17,7 4,7L7.5,7L7.5,17.5C7.5,18.33 8.17,19 9,19C9.83,19 10.5,18.33 10.5,17.5L10.5,7L14,7C14.83,7 15.5,6.33 15.5,5.5C15.5,4.67 14.83,4 14,4L4,4C3.17,4 2.5,4.67 2.5,5.5ZM20,9L14,9C13.17,9 12.5,9.67 12.5,10.5C12.5,11.33 13.17,12 14,12L15.5,12L15.5,17.5C15.5,18.33 16.17,19 17,19C17.83,19 18.5,18.33 18.5,17.5L18.5,12L20,12C20.83,12 21.5,11.33 21.5,10.5C21.5,9.67 20.83,9 20,9Z" style="fill:rgb(187,182,193);"/>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
