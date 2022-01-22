@@ -7,21 +7,6 @@ use crate::{
 
 use crate::utils::svg::{BRUSH, ERASER, FILL, GEOMETRY, ICON_SIZE, POINTER, TEXT};
 
-pub struct BrushTool<'a> {
-    pub brush_button: Button<'a, FreezeFrameMessage>,
-}
-
-impl<'a> BrushTool<'a> {
-    pub fn new<E>(content: E, state: &'a mut button::State) -> Self
-    where
-        E: Into<Element<'a, FreezeFrameMessage>>,
-    {
-        Self {
-            brush_button: Button::new(state, content),
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BrushFilter {
     Pointer,
@@ -64,8 +49,7 @@ impl BrushControls {
             let icon = Svg::new(handle)
                 .height(Length::Units(ICON_SIZE))
                 .width(Length::Units(ICON_SIZE));
-            let button = BrushTool::new(icon, state)
-                .brush_button
+            let button = Button::new(state, icon)
                 .style(if filter == current_filter {
                     HeaderButtonStyle::HeaderButtonSelectedStyle
                 } else {
