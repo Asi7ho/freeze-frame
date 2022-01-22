@@ -62,6 +62,13 @@ impl Sandbox for FreezeFrame {
                         widgets::header::HeaderMessage::BrushControlsChange(filter) => {
                             self.header_state.brush_filter = filter
                         }
+                        widgets::header::HeaderMessage::ChangePalette => (),
+                        widgets::header::HeaderMessage::AddColor(color) => {
+                            self.header_state.color_palette.colors.push(color)
+                        }
+                        widgets::header::HeaderMessage::ChangeColor(id) => {
+                            self.header_state.brush_color_id = id
+                        }
                     }
                 }
                 InteractionMessage::Ignore => (),

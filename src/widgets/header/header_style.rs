@@ -73,3 +73,21 @@ impl button::StyleSheet for HeaderButtonStyle {
         }
     }
 }
+
+pub struct HeaderColorButtonStyle {
+    pub color: Color,
+    pub selected: bool,
+}
+
+impl button::StyleSheet for HeaderColorButtonStyle {
+    fn active(&self) -> button::Style {
+        button::Style {
+            shadow_offset: Default::default(),
+            background: Some(self.color.into()),
+            border_radius: 10.0,
+            border_width: if self.selected { 3.0 } else { 0.0 },
+            border_color: Color::from_rgba8(187, 182, 197, 0.15),
+            text_color: Color::TRANSPARENT,
+        }
+    }
+}
