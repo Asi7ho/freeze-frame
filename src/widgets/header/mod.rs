@@ -1,5 +1,6 @@
 pub mod brush_tools;
 pub mod color_palette;
+pub mod extra_tools;
 pub mod header;
 pub mod header_style;
 pub mod scene_title;

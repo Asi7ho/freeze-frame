@@ -84,9 +84,9 @@ impl button::StyleSheet for HeaderColorButtonStyle {
         button::Style {
             shadow_offset: Default::default(),
             background: Some(self.color.into()),
-            border_radius: 10.0,
-            border_width: if self.selected { 3.0 } else { 0.0 },
-            border_color: Color::from_rgba8(187, 182, 197, 0.15),
+            border_radius: 8.0,
+            border_width: if self.selected { 2.5 } else { 0.0 },
+            border_color: Color::from_rgba8(87, 192, 208, 1.0),
             text_color: Color::TRANSPARENT,
         }
     }

@@ -1,5 +1,5 @@
 use iced::{window, Element, Sandbox, Settings};
-use widgets::header::HeaderState;
+use widgets::header::{extra_tools::ExtraFilter, HeaderState};
 
 mod utils;
 mod widgets;
@@ -68,6 +68,16 @@ impl Sandbox for FreezeFrame {
                         }
                         widgets::header::HeaderMessage::ChangeColor(id) => {
                             self.header_state.brush_color_id = id
+                        }
+                        widgets::header::HeaderMessage::ExtraToolSelected(extra_tool) => {
+                            if extra_tool == self.header_state.extra_filter {
+                                self.header_state.extra_filter = ExtraFilter::Ignore;
+                            } else {
+                                self.header_state.extra_filter = extra_tool
+                            }
+                        }
+                        widgets::header::HeaderMessage::Scrolled(offset) => {
+                            self.header_state.color_scroll_offset = offset
                         }
                     }
                 }

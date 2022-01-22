@@ -1,4 +1,4 @@
-use iced::{button, svg, Align, Button, Container, Element, Length, Row, Svg};
+use iced::{button, svg, Alignment, Button, Container, Element, Length, Row, Svg};
 
 use crate::{
     widgets::header::{HeaderButtonStyle, HeaderMessage},
@@ -101,7 +101,7 @@ impl BrushControls {
                     BrushFilter::Fill,
                     current_brush,
                 ))
-                .align_items(Align::Center),
+                .align_items(Alignment::Center),
         );
 
         return brush_tools.into();

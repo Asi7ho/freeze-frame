@@ -21,7 +21,7 @@ impl TitleControls {
         })
         .size(26)
         .padding(10)
-        .width(Length::Fill)
+        .width(Length::Units(250))
         .style(HeaderStyle);
 
         return scene_title.into();

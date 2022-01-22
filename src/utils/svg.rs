@@ -10,3 +10,5 @@ pub const FILL: &[u8] = include_bytes!("../../assets/fill.svg");
 
 pub const BOTTOM_ARROW: &[u8] = include_bytes!("../../assets/bottom_arrow.svg");
 pub const ADD: &[u8] = include_bytes!("../../assets/add.svg");
+
+pub const GRID: &[u8] = include_bytes!("../../assets/grid.svg");
