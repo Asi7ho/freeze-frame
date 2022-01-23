@@ -76,18 +76,19 @@ impl PaletteControls {
                             .zip(item.1)
                             .enumerate()
                             .map(|(i, (color, state))| {
+                                let mut size = 21;
+                                if (j, i) == current_color_id {
+                                    size = 26;
+                                }
                                 Button::new(state, Text::new(""))
-                                    .height(Length::Units(26))
-                                    .width(Length::Units(26))
+                                    .height(Length::Units(size))
+                                    .width(Length::Units(size))
                                     .on_press(FreezeFrameMessage::Interaction(
                                         InteractionMessage::HeaderInteraction(
                                             HeaderMessage::ChangeColor((j, i)),
                                         ),
                                     ))
-                                    .style(HeaderColorButtonStyle {
-                                        color: *color,
-                                        selected: (j, i) == current_color_id,
-                                    })
+                                    .style(HeaderColorButtonStyle { color: *color })
                                     .padding(10)
                                     .into()
                             })

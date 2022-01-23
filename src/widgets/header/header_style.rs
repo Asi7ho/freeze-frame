@@ -76,7 +76,6 @@ impl button::StyleSheet for HeaderButtonStyle {
 
 pub struct HeaderColorButtonStyle {
     pub color: Color,
-    pub selected: bool,
 }
 
 impl button::StyleSheet for HeaderColorButtonStyle {
@@ -85,8 +84,8 @@ impl button::StyleSheet for HeaderColorButtonStyle {
             shadow_offset: Default::default(),
             background: Some(self.color.into()),
             border_radius: 8.0,
-            border_width: if self.selected { 2.5 } else { 0.0 },
-            border_color: Color::from_rgba8(87, 192, 208, 1.0),
+            border_width: 2.5,
+            border_color: Color::from_rgba8(187, 182, 197, 0.35),
             text_color: Color::TRANSPARENT,
         }
     }
