@@ -69,15 +69,16 @@ impl PaletteControls {
                 // .iter()
                 .zip(states)
                 .enumerate()
-                .map(|(j, item)| {
+                .map(|(n_row, item)| {
                     Row::with_children(
                         item.0
                             .into_iter()
                             .zip(item.1)
                             .enumerate()
-                            .map(|(i, (color, state))| {
+                            .map(|(n_col, (color, state))| {
+                                let color_style = HeaderColorButtonStyle { color: *color };
                                 let mut size = 21;
-                                if (j, i) == current_color_id {
+                                if (n_row, n_col) == current_color_id {
                                     size = 26;
                                 }
                                 Button::new(state, Text::new(""))
@@ -85,10 +86,10 @@ impl PaletteControls {
                                     .width(Length::Units(size))
                                     .on_press(FreezeFrameMessage::Interaction(
                                         InteractionMessage::HeaderInteraction(
-                                            HeaderMessage::ChangeColor((j, i)),
+                                            HeaderMessage::ChangeColor((n_row, n_col)),
                                         ),
                                     ))
-                                    .style(HeaderColorButtonStyle { color: *color })
+                                    .style(color_style)
                                     .padding(10)
                                     .into()
                             })
@@ -120,7 +121,7 @@ impl PaletteControls {
                             ))
                         })
                         .max_height(45)
-                        .max_width(220)
+                        .max_width(150)
                         .padding(8)
                         .spacing(5),
                 )
@@ -128,10 +129,10 @@ impl PaletteControls {
                     add_color_state,
                     ADD,
                     FreezeFrameMessage::Interaction(InteractionMessage::HeaderInteraction(
-                        HeaderMessage::AddColor(Color::WHITE),
+                        HeaderMessage::AddColor,
                     )),
                 ))
-                .width(Length::Units(300)),
+                .width(Length::Units(225)),
         );
 
         return color_tools.into();

@@ -1,4 +1,4 @@
-use iced::{Alignment, Color, Container, Element, Length, Row};
+use iced::{Alignment, Container, Element, Length, Row};
 
 use crate::widgets::header::brush_tools::{BrushControls, BrushFilter};
 use crate::widgets::header::color_palette::{ColorPalette, PaletteControls};
@@ -29,7 +29,7 @@ pub enum HeaderMessage {
     ExtraToolSelected(ExtraFilter),
     ChangePalette,
     ChangeColor((usize, usize)),
-    AddColor(Color),
+    AddColor,
     Scrolled(f32),
 }
 
@@ -44,7 +44,7 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
 
     // Color palette
     let color_tools = header_state.color_controls.view(
-        header_state.color_palette.clone().colors,
+        header_state.color_palette.colors.clone(),
         header_state.brush_color_id,
     );
 
@@ -53,17 +53,15 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
 
     let header = Container::new(
         Row::new()
+            .spacing(50)
             .push(scene_title)
-            .push(Row::new().width(Length::Fill))
             .push(brush_tools)
-            .push(Row::new().width(Length::Fill))
             .push(color_tools)
-            .push(Row::new().width(Length::Fill))
             .push(extra_tools)
-            .push(Row::new().width(Length::Units(50)))
-            .width(Length::Fill)
             .align_items(Alignment::Center),
     )
+    .height(Length::Units(45))
+    .width(Length::Fill)
     .style(HeaderStyle);
 
     return header.into();
