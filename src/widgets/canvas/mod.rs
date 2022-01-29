@@ -1,8 +1,6 @@
 use iced::{canvas, Canvas, Element, Length};
 
-pub mod canvas_style;
 pub mod drawing;
-pub use canvas_style::CanvasStyle;
 
 pub use drawing::{Drawable, Strokes};
 
