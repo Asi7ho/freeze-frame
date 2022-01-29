@@ -1,6 +1,4 @@
-use iced::{canvas, Canvas, Column, Container, Element, Length};
-
-use crate::{FreezeFrameMessage, InteractionMessage};
+use iced::{canvas, Canvas, Element, Length};
 
 pub mod canvas_style;
 pub mod drawing;
