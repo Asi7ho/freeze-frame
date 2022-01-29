@@ -109,8 +109,18 @@ impl Sandbox for FreezeFrame {
                         }
                     }
                 }
-                InteractionMessage::AddStrokes(_) => todo!(),
-                InteractionMessage::Clear => todo!(),
+                InteractionMessage::AddStrokes(stroke) => {
+                    self.strokes.push(stroke);
+                    self.canvas_state.request_redraw();
+                }
+                InteractionMessage::Clear => {
+                    self.canvas_state = CanvasState {
+                        canvas_width: self.canvas_state.canvas_width,
+                        canvas_height: self.canvas_state.canvas_height,
+                        ..CanvasState::default()
+                    };
+                    self.strokes.clear();
+                }
                 InteractionMessage::Ignore => (),
             },
         }
