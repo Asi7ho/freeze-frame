@@ -1,7 +1,7 @@
 use iced::{window, Color, Column, Container, Element, Length, Row, Sandbox, Settings};
 use widgets::{
-    canvas::{CanvasState, Strokes},
-    header::{extra_tools::ExtraFilter, HeaderState},
+    canvas::{CanvasMessage, CanvasState, Strokes},
+    header::{GridFilter, HeaderMessage, HeaderState},
     property::PropertyState,
     timeline::TimelineState,
 };
@@ -35,17 +35,10 @@ pub struct FreezeFrame {
 }
 
 #[derive(Debug, Clone)]
-
-pub enum InteractionMessage {
-    HeaderInteraction(widgets::header::HeaderMessage),
-    AddStrokes(Strokes),
-    Clear,
-    Ignore,
-}
-
-#[derive(Debug, Clone)]
 pub enum FreezeFrameMessage {
-    Interaction(InteractionMessage),
+    HeaderInteraction(HeaderMessage),
+    CanvasInteraction(CanvasMessage),
+    Ignore,
 }
 
 impl Sandbox for FreezeFrame {
@@ -72,48 +65,46 @@ impl Sandbox for FreezeFrame {
 
     fn update(&mut self, message: FreezeFrameMessage) {
         match message {
-            FreezeFrameMessage::Interaction(interaction) => match interaction {
-                InteractionMessage::HeaderInteraction(header_interaction) => {
-                    match header_interaction {
-                        widgets::header::HeaderMessage::SceneTitleChange(scene_title) => {
-                            self.header_state.scene_title_input = scene_title;
-                        }
-                        widgets::header::HeaderMessage::BrushControlsChange(filter) => {
-                            self.header_state.brush_filter = filter
-                        }
-                        widgets::header::HeaderMessage::ChangePalette => (),
-                        widgets::header::HeaderMessage::AddColor => {
-                            let step = Uniform::new(0, 256);
-                            let mut rng = rand::thread_rng();
-                            let red = step.sample(&mut rng) as u8;
-                            let green = step.sample(&mut rng) as u8;
-                            let blue = step.sample(&mut rng) as u8;
-
-                            self.header_state
-                                .color_palette
-                                .colors
-                                .push(Color::from_rgb8(red, green, blue))
-                        }
-                        widgets::header::HeaderMessage::ChangeColor(id_row_col) => {
-                            self.header_state.brush_color_id = id_row_col
-                        }
-                        widgets::header::HeaderMessage::ExtraToolSelected(extra_tool) => {
-                            if extra_tool == self.header_state.extra_filter {
-                                self.header_state.extra_filter = ExtraFilter::Ignore;
-                            } else {
-                                self.header_state.extra_filter = extra_tool
-                            }
-                        }
-                        widgets::header::HeaderMessage::Scrolled(offset) => {
-                            self.header_state.color_scroll_offset = offset
-                        }
+            FreezeFrameMessage::HeaderInteraction(m) => match m {
+                widgets::header::HeaderMessage::SceneTitleChange(scene_title) => {
+                    self.header_state.scene_title_input = scene_title;
+                }
+                widgets::header::HeaderMessage::BrushControlsChange(filter) => {
+                    self.header_state.brush_filter = filter
+                }
+                widgets::header::HeaderMessage::GridToolSelected(tool) => {
+                    if tool == self.header_state.grid_filter {
+                        self.header_state.grid_filter = GridFilter::Ignore;
+                    } else {
+                        self.header_state.grid_filter = tool
                     }
                 }
-                InteractionMessage::AddStrokes(stroke) => {
+                widgets::header::HeaderMessage::ChangePalette => (),
+                widgets::header::HeaderMessage::ChangeColor(id_row_col) => {
+                    self.header_state.brush_color_id = id_row_col
+                }
+                widgets::header::HeaderMessage::AddColor => {
+                    let step = Uniform::new(0, 256);
+                    let mut rng = rand::thread_rng();
+                    let red = step.sample(&mut rng) as u8;
+                    let green = step.sample(&mut rng) as u8;
+                    let blue = step.sample(&mut rng) as u8;
+
+                    self.header_state
+                        .color_palette
+                        .colors
+                        .push(Color::from_rgb8(red, green, blue))
+                }
+                widgets::header::HeaderMessage::Scrolled(offset) => {
+                    self.header_state.color_scroll_offset = offset
+                }
+            },
+            FreezeFrameMessage::CanvasInteraction(m) => match m {
+                CanvasMessage::AddStrokes(stroke) => {
                     self.strokes.push(stroke);
                     self.canvas_state.request_redraw();
                 }
-                InteractionMessage::Clear => {
+                CanvasMessage::Clear => {
                     self.canvas_state = CanvasState {
                         canvas_width: self.canvas_state.canvas_width,
                         canvas_height: self.canvas_state.canvas_height,
@@ -121,17 +112,17 @@ impl Sandbox for FreezeFrame {
                     };
                     self.strokes.clear();
                 }
-                InteractionMessage::Ignore => (),
             },
+            FreezeFrameMessage::Ignore => (),
         }
     }
 
     fn view(&mut self) -> Element<FreezeFrameMessage> {
-        let header_view = widgets::header::header::view(&mut self.header_state);
+        let header_view = widgets::header::view(&mut self.header_state);
         let canvas_view = self
             .canvas_state
             .view(&self.strokes)
-            .map(|stroke| FreezeFrameMessage::Interaction(InteractionMessage::AddStrokes(stroke)));
+            .map(|stroke| FreezeFrameMessage::CanvasInteraction(CanvasMessage::AddStrokes(stroke)));
         let timeline_view = widgets::timeline::view(&mut self.timeline_state);
         let property_view = widgets::property::view(&mut self.property_state);
 

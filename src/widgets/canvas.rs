@@ -1,8 +1,12 @@
 use iced::{canvas, Canvas, Element, Length};
 
-pub mod drawing;
+pub use super::tools::drawing::{Drawable, Strokes};
 
-pub use drawing::{Drawable, Strokes};
+#[derive(Debug, Clone)]
+pub enum CanvasMessage {
+    AddStrokes(Strokes),
+    Clear,
+}
 
 #[derive(Debug, Default)]
 pub struct CanvasState {
