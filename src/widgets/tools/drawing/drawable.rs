@@ -4,6 +4,7 @@ use iced::{
 };
 
 use crate::widgets::canvas::{CanvasState, Pending};
+use crate::widgets::header::BrushFilter;
 
 use super::Strokes;
 
@@ -26,18 +27,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                 Event::Mouse(mouse_event) => match mouse_event {
                     mouse::Event::ButtonReleased(mouse::Button::Left) => {
                         self.state.is_drawing = false;
-                        match self.state.pending {
-                            Pending::StrokePending { stroke: _ } => {
-                                self.state.pending = Pending::StrokePending {
-                                    stroke: Strokes {
-                                        from: None,
-                                        to: None,
-                                        color: None,
-                                        size: None,
-                                    },
-                                };
-                            }
-                        }
+                        self.state.pending = Pending::default();
                     }
                     _ => (),
                 },
@@ -46,76 +36,73 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
             return (event::Status::Ignored, None);
         };
 
-        match event {
-            Event::Mouse(mouse_event) => {
-                let message = match mouse_event {
-                    mouse::Event::ButtonPressed(mouse::Button::Left) => {
-                        self.state.is_drawing = true;
-                        match self.state.pending {
-                            Pending::StrokePending { mut stroke } => {
-                                let stroke_to_send = match (stroke.from, stroke.to) {
+        match self.state.brush_filer {
+            BrushFilter::Brush | BrushFilter::Eraser => match event {
+                Event::Mouse(mouse_event) => {
+                    let message = match mouse_event {
+                        mouse::Event::ButtonPressed(mouse::Button::Left) => {
+                            self.state.is_drawing = true;
+                            match self.state.pending {
+                                Pending::Freehand { mut from, to } => match (from, to) {
                                     (None, None) => {
-                                        stroke.from = Some(cursor_position);
-                                        self.state.pending = Pending::StrokePending { stroke };
+                                        from = Some(cursor_position);
+                                        self.state.pending = Pending::Freehand { from, to };
                                         None
                                     }
                                     _ => None,
-                                };
-                                stroke_to_send
+                                },
                             }
                         }
-                    }
-                    mouse::Event::CursorMoved { position: _ } => {
-                        if self.state.is_drawing {
-                            match self.state.pending {
-                                Pending::StrokePending { mut stroke } => {
-                                    let stroke_to_send = match (stroke.from, stroke.to) {
+                        mouse::Event::CursorMoved { position: _ } => {
+                            if self.state.is_drawing {
+                                match self.state.pending {
+                                    Pending::Freehand { mut from, mut to } => match (from, to) {
                                         (None, None) => {
-                                            stroke.from = Some(cursor_position);
-                                            self.state.pending = Pending::StrokePending { stroke };
+                                            from = Some(cursor_position);
+                                            self.state.pending = Pending::Freehand { from, to };
                                             None
                                         }
                                         (Some(_), None) => {
-                                            stroke.to = Some(cursor_position);
-                                            stroke.color = Some(self.state.brush_color);
-                                            let send = Some(stroke);
+                                            to = Some(cursor_position);
 
-                                            stroke.from = stroke.to;
-                                            stroke.to = None;
-                                            stroke.color = None;
-                                            self.state.pending = Pending::StrokePending { stroke };
+                                            let color =
+                                                if self.state.brush_filer == BrushFilter::Eraser {
+                                                    Color::WHITE
+                                                } else {
+                                                    self.state.brush_color
+                                                };
 
-                                            send
+                                            let message = Some(Strokes {
+                                                from,
+                                                to,
+                                                color,
+                                                size: self.state.size,
+                                            });
+
+                                            from = to;
+                                            to = None;
+                                            self.state.pending = Pending::Freehand { from, to };
+
+                                            message
                                         }
                                         _ => None,
-                                    };
-                                    stroke_to_send
-                                }
-                            }
-                        } else {
-                            None
-                        }
-                    }
-                    mouse::Event::ButtonReleased(mouse::Button::Left) => {
-                        self.state.is_drawing = false;
-                        match self.state.pending {
-                            Pending::StrokePending { stroke: _ } => {
-                                self.state.pending = Pending::StrokePending {
-                                    stroke: Strokes {
-                                        from: None,
-                                        to: None,
-                                        color: None,
-                                        size: None,
                                     },
-                                };
+                                }
+                            } else {
                                 None
                             }
                         }
-                    }
-                    _ => None,
-                };
-                (event::Status::Captured, message)
-            }
+                        mouse::Event::ButtonReleased(mouse::Button::Left) => {
+                            self.state.is_drawing = false;
+                            self.state.pending = Pending::default();
+                            None
+                        }
+                        _ => None,
+                    };
+                    (event::Status::Captured, message)
+                }
+                _ => (event::Status::Ignored, None),
+            },
             _ => (event::Status::Ignored, None),
         }
     }

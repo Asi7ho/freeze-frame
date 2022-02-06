@@ -1,5 +1,6 @@
-use iced::{canvas, Canvas, Color, Element, Length};
+use iced::{canvas, Canvas, Color, Element, Length, Point};
 
+use super::header::{BrushFilter, GridFilter};
 pub use super::tools::drawing::{Drawable, Strokes};
 
 #[derive(Debug, Clone)]
@@ -16,6 +17,9 @@ pub struct CanvasState {
     pub pending: Pending,
     pub is_drawing: bool,
     pub brush_color: Color,
+    pub size: f32,
+    pub brush_filer: BrushFilter,
+    pub grid_filer: GridFilter,
 }
 
 impl CanvasState {
@@ -36,18 +40,17 @@ impl CanvasState {
 
 #[derive(Debug, Clone, Copy)]
 pub enum Pending {
-    StrokePending { stroke: Strokes },
+    Freehand {
+        from: Option<Point>,
+        to: Option<Point>,
+    },
 }
 
 impl Default for Pending {
     fn default() -> Self {
-        Pending::StrokePending {
-            stroke: Strokes {
-                from: None,
-                to: None,
-                color: None,
-                size: None,
-            },
+        Pending::Freehand {
+            from: None,
+            to: None,
         }
     }
 }
