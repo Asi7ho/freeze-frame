@@ -1,9 +1,9 @@
 use iced::{
-    canvas::{self, event, Cursor, Frame, Path, Stroke},
+    canvas::{self, event, Cursor, Event, Frame, Path},
     mouse, Color, Point, Rectangle, Size,
 };
 
-use crate::widgets::canvas::CanvasState;
+use crate::widgets::canvas::{CanvasState, Pending};
 
 use super::Strokes;
 
@@ -22,10 +22,94 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
         let cursor_position = if let Some(position) = cursor.position_in(&bounds) {
             position
         } else {
+            match event {
+                Event::Mouse(mouse_event) => match mouse_event {
+                    mouse::Event::ButtonReleased(mouse::Button::Left) => {
+                        self.state.is_drawing = false;
+                        match self.state.pending {
+                            Pending::StrokePending { stroke: _ } => {
+                                self.state.pending = Pending::StrokePending {
+                                    stroke: Strokes {
+                                        from: None,
+                                        to: None,
+                                    },
+                                };
+                            }
+                        }
+                    }
+                    _ => (),
+                },
+                _ => (),
+            };
             return (event::Status::Ignored, None);
         };
 
         match event {
+            Event::Mouse(mouse_event) => {
+                let message = match mouse_event {
+                    mouse::Event::ButtonPressed(mouse::Button::Left) => {
+                        self.state.is_drawing = true;
+                        match self.state.pending {
+                            Pending::StrokePending { mut stroke } => {
+                                let stroke_to_send = match (stroke.from, stroke.to) {
+                                    (None, None) => {
+                                        stroke.from = Some(cursor_position);
+                                        self.state.pending = Pending::StrokePending { stroke };
+                                        None
+                                    }
+                                    _ => None,
+                                };
+                                stroke_to_send
+                            }
+                        }
+                    }
+                    mouse::Event::CursorMoved { position: _ } => {
+                        if self.state.is_drawing {
+                            match self.state.pending {
+                                Pending::StrokePending { mut stroke } => {
+                                    let stroke_to_send = match (stroke.from, stroke.to) {
+                                        (None, None) => {
+                                            stroke.from = Some(cursor_position);
+                                            self.state.pending = Pending::StrokePending { stroke };
+                                            None
+                                        }
+                                        (Some(_), None) => {
+                                            stroke.to = Some(cursor_position);
+                                            let send = Some(stroke);
+
+                                            stroke.from = stroke.to;
+                                            stroke.to = None;
+                                            self.state.pending = Pending::StrokePending { stroke };
+
+                                            send
+                                        }
+                                        _ => None,
+                                    };
+                                    stroke_to_send
+                                }
+                            }
+                        } else {
+                            None
+                        }
+                    }
+                    mouse::Event::ButtonReleased(mouse::Button::Left) => {
+                        self.state.is_drawing = false;
+                        match self.state.pending {
+                            Pending::StrokePending { stroke: _ } => {
+                                self.state.pending = Pending::StrokePending {
+                                    stroke: Strokes {
+                                        from: None,
+                                        to: None,
+                                    },
+                                };
+                                None
+                            }
+                        }
+                    }
+                    _ => None,
+                };
+                (event::Status::Captured, message)
+            }
             _ => (event::Status::Ignored, None),
         }
     }
@@ -38,7 +122,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
         }
     }
 
-    fn draw(&self, bounds: iced::Rectangle, cursor: canvas::Cursor) -> Vec<canvas::Geometry> {
+    fn draw(&self, bounds: iced::Rectangle, _cursor: canvas::Cursor) -> Vec<canvas::Geometry> {
         let mut contents = Vec::new();
 
         // Background canvas
@@ -62,14 +146,10 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
         frame.fill(&foreground_canvas, Color::WHITE);
         contents.push(frame.into_geometry());
 
-        // let content = self.state.cache.draw(bounds.size(), |frame: &mut Frame| {
-        //     Strokes::draw_all(self.strokes, frame);
-
-        //     frame.stroke(
-        //         &Path::rectangle(Point::ORIGIN, frame.size()),
-        //         Stroke::default(),
-        //     );
-        // });
+        let strokes_content = self.state.cache.draw(bounds.size(), |frame: &mut Frame| {
+            Strokes::draw_all(self.strokes, frame);
+        });
+        contents.extend(vec![strokes_content]);
 
         contents
     }

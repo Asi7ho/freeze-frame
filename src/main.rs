@@ -53,6 +53,7 @@ impl Sandbox for FreezeFrame {
             canvas_state: CanvasState {
                 canvas_width: 750.0,
                 canvas_height: 435.0,
+                is_drawing: false,
                 ..CanvasState::default()
             },
             ..FreezeFrame::default()

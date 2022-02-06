@@ -13,6 +13,8 @@ pub struct CanvasState {
     pub canvas_width: f32,
     pub canvas_height: f32,
     pub cache: canvas::Cache,
+    pub pending: Pending,
+    pub is_drawing: bool,
 }
 
 impl CanvasState {
@@ -28,5 +30,21 @@ impl CanvasState {
 
     pub fn request_redraw(&mut self) {
         self.cache.clear()
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Pending {
+    StrokePending { stroke: Strokes },
+}
+
+impl Default for Pending {
+    fn default() -> Self {
+        Pending::StrokePending {
+            stroke: Strokes {
+                from: None,
+                to: None,
+            },
+        }
     }
 }
