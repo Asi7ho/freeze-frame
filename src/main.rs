@@ -1,4 +1,7 @@
-use iced::{window, Color, Column, Container, Element, Length, Row, Sandbox, Settings};
+use iced::{
+    executor, window, Application, Color, Column, Command, Container, Element, Length, Row,
+    Settings,
+};
 use widgets::{
     canvas::{CanvasMessage, CanvasState, Strokes},
     header::{GridFilter, HeaderMessage, HeaderState},
@@ -41,38 +44,46 @@ pub enum FreezeFrameMessage {
     Ignore,
 }
 
-impl Sandbox for FreezeFrame {
+impl Application for FreezeFrame {
+    type Executor = executor::Default;
     type Message = FreezeFrameMessage;
+    type Flags = ();
 
-    fn new() -> Self {
-        Self {
-            header_state: HeaderState {
-                scene_title_input: String::from("Scene title"),
-                ..HeaderState::default()
+    fn new(_flags: ()) -> (Self, Command<FreezeFrameMessage>) {
+        let header_state = HeaderState {
+            scene_title_input: String::from("Scene title"),
+            ..HeaderState::default()
+        };
+        let canvas_state = CanvasState {
+            canvas_width: 750.0,
+            canvas_height: 435.0,
+            brush_color: header_state.color_palette.colors[0],
+            size: 1.0,
+            ..CanvasState::default()
+        };
+        (
+            Self {
+                header_state,
+                canvas_state,
+                ..FreezeFrame::default()
             },
-            canvas_state: CanvasState {
-                canvas_width: 750.0,
-                canvas_height: 435.0,
-                is_drawing: false,
-                brush_color: Color::BLACK,
-                ..CanvasState::default()
-            },
-            ..FreezeFrame::default()
-        }
+            Command::none(),
+        )
     }
 
     fn title(&self) -> String {
         String::from("Freeze Frame")
     }
 
-    fn update(&mut self, message: FreezeFrameMessage) {
+    fn update(&mut self, message: FreezeFrameMessage) -> Command<FreezeFrameMessage> {
         match message {
             FreezeFrameMessage::HeaderInteraction(m) => match m {
                 widgets::header::HeaderMessage::SceneTitleChange(scene_title) => {
                     self.header_state.scene_title_input = scene_title;
                 }
                 widgets::header::HeaderMessage::BrushControlsChange(filter) => {
-                    self.header_state.brush_filter = filter
+                    self.header_state.brush_filter = filter;
+                    self.canvas_state.brush_filer = filter
                 }
                 widgets::header::HeaderMessage::GridToolSelected(tool) => {
                     if tool == self.header_state.grid_filter {
@@ -116,7 +127,9 @@ impl Sandbox for FreezeFrame {
                 }
             },
             FreezeFrameMessage::Ignore => (),
-        }
+        };
+
+        Command::none()
     }
 
     fn view(&mut self) -> Element<FreezeFrameMessage> {
