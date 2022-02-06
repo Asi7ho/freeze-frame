@@ -32,6 +32,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                     stroke: Strokes {
                                         from: None,
                                         to: None,
+                                        color: None,
                                     },
                                 };
                             }
@@ -75,10 +76,12 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                         }
                                         (Some(_), None) => {
                                             stroke.to = Some(cursor_position);
+                                            stroke.color = Some(self.state.brush_color);
                                             let send = Some(stroke);
 
                                             stroke.from = stroke.to;
                                             stroke.to = None;
+                                            stroke.color = None;
                                             self.state.pending = Pending::StrokePending { stroke };
 
                                             send
@@ -100,6 +103,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                     stroke: Strokes {
                                         from: None,
                                         to: None,
+                                        color: None,
                                     },
                                 };
                                 None
@@ -149,6 +153,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
         let strokes_content = self.state.cache.draw(bounds.size(), |frame: &mut Frame| {
             Strokes::draw_all(self.strokes, frame);
         });
+        // let strokes_content = Strokes::draw_all(self.strokes, bounds);
         contents.extend(vec![strokes_content]);
 
         contents

@@ -1,4 +1,4 @@
-use iced::{canvas, Canvas, Element, Length};
+use iced::{canvas, Canvas, Color, Element, Length};
 
 pub use super::tools::drawing::{Drawable, Strokes};
 
@@ -15,6 +15,7 @@ pub struct CanvasState {
     pub cache: canvas::Cache,
     pub pending: Pending,
     pub is_drawing: bool,
+    pub brush_color: Color,
 }
 
 impl CanvasState {
@@ -44,6 +45,7 @@ impl Default for Pending {
             stroke: Strokes {
                 from: None,
                 to: None,
+                color: None,
             },
         }
     }

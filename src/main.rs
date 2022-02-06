@@ -54,6 +54,7 @@ impl Sandbox for FreezeFrame {
                 canvas_width: 750.0,
                 canvas_height: 435.0,
                 is_drawing: false,
+                brush_color: Color::BLACK,
                 ..CanvasState::default()
             },
             ..FreezeFrame::default()
@@ -82,7 +83,9 @@ impl Sandbox for FreezeFrame {
                 }
                 widgets::header::HeaderMessage::ChangePalette => (),
                 widgets::header::HeaderMessage::ChangeColor(id_row_col) => {
-                    self.header_state.brush_color_id = id_row_col
+                    self.header_state.brush_color_id = id_row_col;
+                    self.canvas_state.brush_color =
+                        self.header_state.color_palette.colors[id_row_col.0 * 5 + id_row_col.1]
                 }
                 widgets::header::HeaderMessage::AddColor => {
                     let step = Uniform::new(0, 256);
@@ -91,10 +94,8 @@ impl Sandbox for FreezeFrame {
                     let green = step.sample(&mut rng) as u8;
                     let blue = step.sample(&mut rng) as u8;
 
-                    self.header_state
-                        .color_palette
-                        .colors
-                        .push(Color::from_rgb8(red, green, blue))
+                    let color = Color::from_rgb8(red, green, blue);
+                    self.header_state.color_palette.colors.push(color)
                 }
                 widgets::header::HeaderMessage::Scrolled(offset) => {
                     self.header_state.color_scroll_offset = offset
