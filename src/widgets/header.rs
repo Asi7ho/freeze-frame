@@ -94,11 +94,9 @@ pub enum HeaderMessage {
 pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
     let create_icon = |icon_byte| {
         let handle = svg::Handle::from_memory(icon_byte);
-        let icon = Svg::new(handle)
+        Svg::new(handle)
             .height(Length::Units(ICON_SIZE))
-            .width(Length::Units(ICON_SIZE));
-
-        icon
+            .width(Length::Units(ICON_SIZE))
     };
 
     let get_default_button_style = || WButtonIconStyle {
@@ -137,16 +135,14 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
             style.background = Color::from_rgba8(187, 182, 197, 0.15);
         }
 
-        let button_icon = WButtonIcon::new(
+        WButtonIcon::new(
             state,
             icon,
             FreezeFrameMessage::HeaderInteraction(HeaderMessage::BrushControlsChange(filter)),
             style,
         )
         .widget
-        .padding(10);
-
-        button_icon
+        .padding(10)
     };
 
     let brush_tools = Container::new(
@@ -196,11 +192,9 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
         let icon = create_icon(icon_byte);
         let style = get_default_button_style();
 
-        let button_icon = WButtonIcon::new(state, icon, message, style)
+        WButtonIcon::new(state, icon, message, style)
             .widget
-            .padding(10);
-
-        button_icon
+            .padding(10)
     };
 
     let color_palette = WColorPalette::new(
@@ -238,23 +232,21 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
     );
 
     // Grid tools
-    let controller_button = |state, icon_byte, filter, selected| {
+    let controller_button = |state, icon_byte, filter, current_filter| {
         let icon = create_icon(icon_byte);
         let mut style = get_default_button_style();
-        if filter == selected {
+        if filter == current_filter {
             style.background = Color::from_rgba8(187, 182, 197, 0.15);
         }
 
-        let button_icon = WButtonIcon::new(
+        WButtonIcon::new(
             state,
             icon,
             FreezeFrameMessage::HeaderInteraction(HeaderMessage::GridToolSelected(filter)),
             style,
         )
         .widget
-        .padding(10);
-
-        button_icon
+        .padding(10)
     };
 
     let grid_tool = Container::new(
