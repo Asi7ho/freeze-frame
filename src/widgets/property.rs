@@ -5,7 +5,7 @@ use crate::FreezeFrameMessage;
 #[derive(Debug, Default)]
 pub struct PropertyState {}
 
-pub fn view(property_state: &mut PropertyState) -> Element<FreezeFrameMessage> {
+pub fn view(_property_state: &mut PropertyState) -> Element<FreezeFrameMessage> {
     let property = Container::new(Column::new())
         .height(Length::Fill)
         .width(Length::Units(225))

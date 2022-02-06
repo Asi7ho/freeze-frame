@@ -5,7 +5,7 @@ use crate::FreezeFrameMessage;
 #[derive(Debug, Default)]
 pub struct TimelineState {}
 
-pub fn view(timeline_state: &mut TimelineState) -> Element<FreezeFrameMessage> {
+pub fn view(_timeline_state: &mut TimelineState) -> Element<FreezeFrameMessage> {
     let property = Container::new(Column::new())
         .height(Length::Units(125))
         .width(Length::Fill)
