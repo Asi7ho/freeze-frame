@@ -46,6 +46,7 @@ impl Default for Pending {
                 from: None,
                 to: None,
                 color: None,
+                size: None,
             },
         }
     }

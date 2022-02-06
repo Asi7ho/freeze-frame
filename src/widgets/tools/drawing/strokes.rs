@@ -8,6 +8,7 @@ pub struct Strokes {
     pub from: Option<Point>,
     pub to: Option<Point>,
     pub color: Option<Color>,
+    pub size: Option<f32>,
 }
 
 impl Strokes {
@@ -15,11 +16,16 @@ impl Strokes {
         for stroke in strokes {
             if stroke.from.is_some() && stroke.to.is_some() {
                 let freehand_stroke = Path::line(stroke.from.unwrap(), stroke.to.unwrap());
+                let size = if stroke.size.is_some() {
+                    stroke.size.unwrap()
+                } else {
+                    1.0
+                };
                 frame.stroke(
                     &freehand_stroke,
                     Stroke::default()
                         .with_color(stroke.color.unwrap())
-                        .with_width(2.0),
+                        .with_width(size),
                 );
             }
         }

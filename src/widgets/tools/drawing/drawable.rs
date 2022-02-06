@@ -33,6 +33,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                         from: None,
                                         to: None,
                                         color: None,
+                                        size: None,
                                     },
                                 };
                             }
@@ -104,6 +105,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                         from: None,
                                         to: None,
                                         color: None,
+                                        size: None,
                                     },
                                 };
                                 None
