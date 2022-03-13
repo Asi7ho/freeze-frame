@@ -21,7 +21,7 @@ fn main() -> iced::Result {
             min_size: Some((1330, 700)),
             ..window::Settings::default()
         },
-        antialiasing: true,
+        // antialiasing: true,
         ..Settings::default()
     };
 
@@ -58,7 +58,7 @@ impl Application for FreezeFrame {
             canvas_width: 750.0,
             canvas_height: 435.0,
             brush_color: header_state.color_palette.colors[0],
-            size: 1.0,
+            brush_size: 1.0,
             ..CanvasState::default()
         };
         (
@@ -83,7 +83,7 @@ impl Application for FreezeFrame {
                 }
                 widgets::header::HeaderMessage::BrushControlsChange(filter) => {
                     self.header_state.brush_filter = filter;
-                    self.canvas_state.brush_filer = filter
+                    self.canvas_state.brush_filter = filter
                 }
                 widgets::header::HeaderMessage::GridToolSelected(tool) => {
                     if tool == self.header_state.grid_filter {

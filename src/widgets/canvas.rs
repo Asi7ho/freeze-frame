@@ -17,8 +17,8 @@ pub struct CanvasState {
     pub pending: Pending,
     pub is_drawing: bool,
     pub brush_color: Color,
-    pub size: f32,
-    pub brush_filer: BrushFilter,
+    pub brush_size: f32,
+    pub brush_filter: BrushFilter,
     pub grid_filer: GridFilter,
 }
 
