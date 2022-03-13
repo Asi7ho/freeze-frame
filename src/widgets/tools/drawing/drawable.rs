@@ -36,7 +36,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
             return (event::Status::Ignored, None);
         };
 
-        match self.state.brush_filer {
+        match self.state.brush_filter {
             BrushFilter::Brush | BrushFilter::Eraser => match event {
                 Event::Mouse(mouse_event) => {
                     let message = match mouse_event {
@@ -65,18 +65,12 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                         (Some(_), None) => {
                                             to = Some(cursor_position);
 
-                                            let color =
-                                                if self.state.brush_filer == BrushFilter::Eraser {
-                                                    Color::WHITE
-                                                } else {
-                                                    self.state.brush_color
-                                                };
-
                                             let message = Some(Strokes {
+                                                brush: self.state.brush_filter,
                                                 from,
                                                 to,
-                                                color,
-                                                size: self.state.size,
+                                                color: self.state.brush_color,
+                                                size: self.state.brush_size,
                                             });
 
                                             from = to;
@@ -126,25 +120,108 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
 
         // Foreground canvas
         let mut frame = Frame::new(bounds.size());
-        let foreground_canvas = Path::rectangle(
-            Point {
-                x: frame.center().x - self.state.canvas_width / 2.0,
-                y: frame.center().y - self.state.canvas_height / 2.0,
-            },
-            Size {
-                width: self.state.canvas_width,
-                height: self.state.canvas_height,
-            },
-        );
+        let top_left = Point {
+            x: frame.center().x - self.state.canvas_width / 2.0,
+            y: frame.center().y - self.state.canvas_height / 2.0,
+        };
+        let size = Size {
+            width: self.state.canvas_width,
+            height: self.state.canvas_height,
+        };
+        let foreground_canvas = Path::rectangle(top_left, size);
         frame.fill(&foreground_canvas, Color::WHITE);
         contents.push(frame.into_geometry());
 
+        let strokes_ = cut_strokes(self.strokes, top_left, size);
+
         let strokes_content = self.state.cache.draw(bounds.size(), |frame: &mut Frame| {
-            Strokes::draw_all(self.strokes, frame);
+            Strokes::draw_all(&strokes_, frame);
         });
         // let strokes_content = Strokes::draw_all(self.strokes, bounds);
         contents.extend(vec![strokes_content]);
 
         contents
     }
+}
+
+fn cut_strokes(strokes: &[Strokes], top_left: Point, size: Size) -> Vec<Strokes> {
+    let rectangle = iced::Rectangle::new(top_left, size);
+    let mut new_strokes = Vec::new();
+    for stroke in strokes {
+        if stroke.from.is_some() && stroke.to.is_some() {
+            let from = stroke.from.unwrap();
+            let to = stroke.to.unwrap();
+            if rectangle.contains(from) && !rectangle.contains(to) {
+                let mut stroke_inner = stroke.clone();
+                let mut stroke_outer = stroke.clone();
+                let contact_point = compute_contact_point(from, to, top_left, size);
+                stroke_inner.to = Some(contact_point);
+                stroke_outer.from = Some(contact_point);
+                if stroke.brush == BrushFilter::Eraser {
+                    stroke_inner.color = Color::WHITE;
+                    stroke_outer.color = Color::from_rgb8(34, 34, 34);
+                }
+                new_strokes.push(stroke_inner);
+                new_strokes.push(stroke_outer);
+            } else if !rectangle.contains(from) && rectangle.contains(to) {
+                let mut stroke_inner = stroke.clone();
+                let mut stroke_outer = stroke.clone();
+                let contact_point = compute_contact_point(to, from, top_left, size);
+
+                stroke_inner.from = Some(contact_point);
+                stroke_outer.to = Some(contact_point);
+                if stroke.brush == BrushFilter::Eraser {
+                    stroke_inner.color = Color::WHITE;
+                    stroke_outer.color = Color::from_rgb8(34, 34, 34);
+                }
+                new_strokes.push(stroke_inner);
+                new_strokes.push(stroke_outer);
+            } else {
+                let mut stroke_ = stroke.clone();
+                let from = stroke_.from.unwrap();
+                let to = stroke_.to.unwrap();
+                if rectangle.contains(from) && rectangle.contains(to) {
+                    if stroke.brush == BrushFilter::Eraser {
+                        stroke_.color = Color::WHITE;
+                    }
+                } else {
+                    if stroke.brush == BrushFilter::Eraser {
+                        stroke_.color = Color::from_rgb8(34, 34, 34);
+                    }
+                }
+                new_strokes.push(stroke_);
+            }
+        }
+    }
+    return new_strokes;
+}
+
+fn compute_contact_point(from: Point, to: Point, top_left: Point, size: Size) -> Point {
+    let mut contact_point = Point { x: 0.0, y: 0.0 };
+    if top_left.x <= from.x && top_left.x > to.x {
+        contact_point = Point {
+            x: top_left.x,
+            y: (to.y - from.y) * top_left.x / (to.x - from.x) + from.y
+                - (to.y - from.y) * from.x / (to.x - from.x),
+        };
+    } else if from.x <= top_left.x + size.width && to.x > top_left.x + size.width {
+        contact_point = Point {
+            x: top_left.x + size.width,
+            y: (to.y - from.y) * (top_left.x + size.width) / (to.x - from.x) + from.y
+                - (to.y - from.y) * from.x / (to.x - from.x),
+        };
+    } else if top_left.y <= from.y && top_left.y > to.y {
+        contact_point = Point {
+            x: (to.x - from.x) * top_left.y / (to.y - from.y) + from.x
+                - (to.x - from.x) * from.y / (to.y - from.y),
+            y: top_left.y,
+        };
+    } else if from.y <= top_left.y + size.height && to.y > top_left.y + size.height {
+        contact_point = Point {
+            x: (to.x - from.x) * (top_left.y + size.height) / (to.y - from.y) + from.x
+                - (to.x - from.x) * from.y / (to.y - from.y),
+            y: top_left.y + size.height,
+        };
+    }
+    return contact_point;
 }

@@ -3,8 +3,11 @@ use iced::{
     Color, Point,
 };
 
+use crate::widgets::header::BrushFilter;
+
 #[derive(Debug, Clone, Copy)]
 pub struct Strokes {
+    pub brush: BrushFilter,
     pub from: Option<Point>,
     pub to: Option<Point>,
     pub color: Color,
