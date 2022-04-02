@@ -1,8 +1,3 @@
-// use iced::{
-//     canvas::{self, event, Cursor, Event, Frame, Path},
-//     mouse, Color, Point, Rectangle, Size,
-// };
-
 use iced::pure::widget::canvas::{
     self,
     event::{self, Event},
@@ -180,23 +175,6 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
         }
     }
 
-    fn mouse_interaction(
-        &self,
-        interaction: &Interaction,
-        bounds: Rectangle,
-        cursor: Cursor,
-    ) -> mouse::Interaction {
-        if cursor.is_over(&bounds) {
-            match interaction {
-                Interaction::Drawing { from: _, to: _ } => mouse::Interaction::Crosshair,
-                Interaction::Erasing { from: _, to: _ } => mouse::Interaction::Crosshair,
-                _ => mouse::Interaction::default(),
-            }
-        } else {
-            mouse::Interaction::default()
-        }
-    }
-
     fn draw(
         &self,
         _interaction: &Interaction,
@@ -204,12 +182,6 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
         _cursor: canvas::Cursor,
     ) -> Vec<canvas::Geometry> {
         let mut contents = Vec::new();
-
-        // Background canvas
-        let mut frame = Frame::new(bounds.size());
-        let background_canvas = Path::rectangle(Point::ORIGIN, bounds.size());
-        frame.fill(&background_canvas, Color::from_rgb8(34, 34, 34));
-        contents.push(frame.into_geometry());
 
         // Foreground canvas
         let mut frame = Frame::new(bounds.size());
@@ -230,10 +202,26 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
         let strokes_content = self.state.cache.draw(bounds.size(), |frame: &mut Frame| {
             Strokes::draw_all(&strokes_, frame);
         });
-        // let strokes_content = Strokes::draw_all(self.strokes, bounds);
         contents.extend(vec![strokes_content]);
 
         contents
+    }
+
+    fn mouse_interaction(
+        &self,
+        interaction: &Interaction,
+        bounds: Rectangle,
+        cursor: Cursor,
+    ) -> mouse::Interaction {
+        if cursor.is_over(&bounds) {
+            match interaction {
+                Interaction::Drawing { from: _, to: _ } => mouse::Interaction::Crosshair,
+                Interaction::Erasing { from: _, to: _ } => mouse::Interaction::Crosshair,
+                _ => mouse::Interaction::default(),
+            }
+        } else {
+            mouse::Interaction::default()
+        }
     }
 }
 
