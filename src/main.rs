@@ -1,7 +1,12 @@
 use iced::{
-    executor, window, Application, Color, Column, Command, Container, Element, Length, Row,
-    Settings,
+    executor,
+    pure::{
+        widget::{Column, Container, Row},
+        Application, Element,
+    },
+    window, Color, Command, Length, Settings,
 };
+
 use widgets::{
     canvas::{CanvasMessage, CanvasState, Strokes},
     header::{GridFilter, HeaderMessage, HeaderState},
@@ -132,14 +137,14 @@ impl Application for FreezeFrame {
         Command::none()
     }
 
-    fn view(&mut self) -> Element<FreezeFrameMessage> {
-        let header_view = widgets::header::view(&mut self.header_state);
+    fn view(&self) -> Element<FreezeFrameMessage> {
+        let header_view = widgets::header::view(&self.header_state);
         let canvas_view = self
             .canvas_state
             .view(&self.strokes)
             .map(|stroke| FreezeFrameMessage::CanvasInteraction(CanvasMessage::AddStrokes(stroke)));
-        let timeline_view = widgets::timeline::view(&mut self.timeline_state);
-        let property_view = widgets::property::view(&mut self.property_state);
+        let timeline_view = widgets::timeline::view(&self.timeline_state);
+        let property_view = widgets::property::view(&self.property_state);
 
         let main_view = Column::new()
             .push(header_view)

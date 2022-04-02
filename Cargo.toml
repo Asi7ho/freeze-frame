@@ -9,7 +9,7 @@ edition = "2021"
 [dependencies.iced]
 # version = "0.3.0"
 git = "https://github.com/iced-rs/iced"
-features = ["canvas", "svg"]
+features = ["canvas", "svg", "pure"]
 
 [dependencies.rand]
 version = "0.8.4"

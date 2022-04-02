@@ -1,6 +1,9 @@
 use iced::{
-    button, container, scrollable, svg, text_input, Alignment, Color, Container, Element, Length,
-    Row, Scrollable, Svg,
+    pure::{
+        widget::{container, Container, Row, Scrollable},
+        Element,
+    },
+    svg, Alignment, Color, Length, Svg,
 };
 
 use crate::widgets::components::button_icon::{WButtonIcon, WButtonIconStyle};
@@ -26,16 +29,6 @@ impl Default for BrushFilter {
     fn default() -> Self {
         BrushFilter::Pointer
     }
-}
-
-#[derive(Debug, Default, Clone)]
-pub struct BrushStates {
-    pub pointer_state: button::State,
-    pub brush_state: button::State,
-    pub eraser_state: button::State,
-    pub geometry_state: button::State,
-    pub text_state: button::State,
-    pub fill_state: button::State,
 }
 
 #[derive(Debug, Clone)]
@@ -66,18 +59,11 @@ impl Default for GridFilter {
 #[derive(Debug, Default)]
 pub struct HeaderState {
     pub scene_title_input: String,
-    pub scene_title_state: text_input::State,
     pub brush_filter: BrushFilter,
-    pub brush_states: BrushStates,
     pub brush_color_id: (usize, usize),
-    pub choose_palette_state: button::State,
     pub color_palette: ColorPalette,
-    pub color_states: Vec<button::State>,
-    pub scrollbar_state: scrollable::State,
     pub color_scroll_offset: f32,
-    pub add_color_state: button::State,
     pub grid_filter: GridFilter,
-    pub grid_state: button::State,
 }
 
 #[derive(Debug, Clone)]
@@ -91,7 +77,7 @@ pub enum HeaderMessage {
     Scrolled(f32),
 }
 
-pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
+pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
     let create_icon = |icon_byte| {
         let handle = svg::Handle::from_memory(icon_byte);
         Svg::new(handle)
@@ -108,7 +94,6 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
 
     // Scene title
     let scene_title = WTextInput::new(
-        &mut header_state.scene_title_state,
         "Scene Title",
         &header_state.scene_title_input,
         |s| FreezeFrameMessage::HeaderInteraction(HeaderMessage::SceneTitleChange(s)),
@@ -128,7 +113,7 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
     .width(Length::Units(250));
 
     // Brush tools
-    let controller_button = |state, icon_byte, filter, current_filter| {
+    let controller_button = |icon_byte, filter, current_filter| {
         let icon = create_icon(icon_byte);
         let mut style = get_default_button_style();
         if filter == current_filter {
@@ -136,7 +121,6 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
         }
 
         WButtonIcon::new(
-            state,
             icon,
             FreezeFrameMessage::HeaderInteraction(HeaderMessage::BrushControlsChange(filter)),
             style,
@@ -149,37 +133,31 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
         Row::new()
             .spacing(5)
             .push(controller_button(
-                &mut header_state.brush_states.pointer_state,
                 POINTER,
                 BrushFilter::Pointer,
                 header_state.brush_filter,
             ))
             .push(controller_button(
-                &mut header_state.brush_states.brush_state,
                 BRUSH,
                 BrushFilter::Brush,
                 header_state.brush_filter,
             ))
             .push(controller_button(
-                &mut header_state.brush_states.eraser_state,
                 ERASER,
                 BrushFilter::Eraser,
                 header_state.brush_filter,
             ))
             .push(controller_button(
-                &mut header_state.brush_states.geometry_state,
                 GEOMETRY,
                 BrushFilter::Geometry,
                 header_state.brush_filter,
             ))
             .push(controller_button(
-                &mut header_state.brush_states.text_state,
                 TEXT,
                 BrushFilter::Text,
                 header_state.brush_filter,
             ))
             .push(controller_button(
-                &mut header_state.brush_states.fill_state,
                 FILL,
                 BrushFilter::Fill,
                 header_state.brush_filter,
@@ -188,17 +166,14 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
     );
 
     // Color palette
-    let controllers_button = |state, icon_byte, message| {
+    let controllers_button = |icon_byte, message| {
         let icon = create_icon(icon_byte);
         let style = get_default_button_style();
 
-        WButtonIcon::new(state, icon, message, style)
-            .widget
-            .padding(10)
+        WButtonIcon::new(icon, message, style).widget.padding(10)
     };
 
     let color_palette = WColorPalette::new(
-        &mut header_state.color_states,
         header_state.color_palette.colors.clone(),
         5,
         header_state.brush_color_id,
@@ -208,31 +183,24 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
         Row::new()
             .spacing(5)
             .push(controllers_button(
-                &mut header_state.choose_palette_state,
                 BOTTOM_ARROW,
                 FreezeFrameMessage::HeaderInteraction(HeaderMessage::ChangePalette),
             ))
             .push(
-                Scrollable::new(&mut header_state.scrollbar_state)
-                    .push(color_palette.widget.spacing(8))
-                    .on_scroll(move |offset| {
-                        FreezeFrameMessage::HeaderInteraction(HeaderMessage::Scrolled(offset))
-                    })
-                    .max_height(45)
-                    .max_width(150)
-                    .padding(8)
-                    .spacing(5),
+                Scrollable::new(color_palette.widget.spacing(8)).on_scroll(move |offset| {
+                    FreezeFrameMessage::HeaderInteraction(HeaderMessage::Scrolled(offset))
+                }),
             )
             .push(controllers_button(
-                &mut header_state.add_color_state,
                 ADD,
                 FreezeFrameMessage::HeaderInteraction(HeaderMessage::AddColor),
             ))
-            .width(Length::Units(225)),
+            .width(Length::Units(225))
+            .align_items(Alignment::Center),
     );
 
     // Grid tools
-    let controller_button = |state, icon_byte, filter, current_filter| {
+    let controller_button = |icon_byte, filter, current_filter| {
         let icon = create_icon(icon_byte);
         let mut style = get_default_button_style();
         if filter == current_filter {
@@ -240,7 +208,6 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
         }
 
         WButtonIcon::new(
-            state,
             icon,
             FreezeFrameMessage::HeaderInteraction(HeaderMessage::GridToolSelected(filter)),
             style,
@@ -253,7 +220,6 @@ pub fn view(header_state: &mut HeaderState) -> Element<FreezeFrameMessage> {
         Row::new()
             .spacing(5)
             .push(controller_button(
-                &mut header_state.grid_state,
                 GRID,
                 GridFilter::Grid,
                 header_state.grid_filter,

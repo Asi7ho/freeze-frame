@@ -1,24 +1,53 @@
-use iced::{
-    canvas::{self, event, Cursor, Event, Frame, Path},
-    mouse, Color, Point, Rectangle, Size,
-};
+// use iced::{
+//     canvas::{self, event, Cursor, Event, Frame, Path},
+//     mouse, Color, Point, Rectangle, Size,
+// };
 
-use crate::widgets::canvas::{CanvasState, Pending};
+use iced::pure::widget::canvas::{
+    self,
+    event::{self, Event},
+    Cursor, Frame, Path,
+};
+use iced::{mouse, Color, Point, Rectangle, Size};
+
+use crate::widgets::canvas::CanvasState;
 use crate::widgets::header::BrushFilter;
 
 use super::Strokes;
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Interaction {
+    None,
+    Drawing {
+        from: Option<Point>,
+        to: Option<Point>,
+    },
+    Erasing {
+        from: Option<Point>,
+        to: Option<Point>,
+    },
+}
+
+impl Default for Interaction {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
 pub struct Drawable<'a> {
-    pub state: &'a mut CanvasState,
+    pub state: &'a CanvasState,
     pub strokes: &'a [Strokes],
 }
 
 impl<'a> canvas::Program<Strokes> for Drawable<'a> {
+    type State = Interaction;
+
     fn update(
-        &mut self,
-        event: canvas::Event,
-        bounds: iced::Rectangle,
-        cursor: canvas::Cursor,
+        &self,
+        interaction: &mut Interaction,
+        event: Event,
+        bounds: Rectangle,
+        cursor: Cursor,
     ) -> (event::Status, Option<Strokes>) {
         let cursor_position = if let Some(position) = cursor.position_in(&bounds) {
             position
@@ -26,8 +55,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
             match event {
                 Event::Mouse(mouse_event) => match mouse_event {
                     mouse::Event::ButtonReleased(mouse::Button::Left) => {
-                        self.state.is_drawing = false;
-                        self.state.pending = Pending::default();
+                        *interaction = Interaction::None;
                     }
                     _ => (),
                 },
@@ -36,80 +64,145 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
             return (event::Status::Ignored, None);
         };
 
-        match self.state.brush_filter {
-            BrushFilter::Brush | BrushFilter::Eraser => match event {
-                Event::Mouse(mouse_event) => {
-                    let message = match mouse_event {
-                        mouse::Event::ButtonPressed(mouse::Button::Left) => {
-                            self.state.is_drawing = true;
-                            match self.state.pending {
-                                Pending::Freehand { mut from, to } => match (from, to) {
-                                    (None, None) => {
-                                        from = Some(cursor_position);
-                                        self.state.pending = Pending::Freehand { from, to };
-                                        None
-                                    }
-                                    _ => None,
-                                },
-                            }
+        match event {
+            Event::Mouse(mouse_event) => {
+                let message = match mouse_event {
+                    mouse::Event::ButtonPressed(mouse::Button::Left) => {
+                        // Update interaction
+                        // This is equivalent to "I'm starting drawing"
+                        if self.state.brush_filter == BrushFilter::Brush {
+                            *interaction = Interaction::Drawing {
+                                from: None,
+                                to: None,
+                            };
+                        } else if self.state.brush_filter == BrushFilter::Eraser {
+                            *interaction = Interaction::Erasing {
+                                from: None,
+                                to: None,
+                            };
+                        } else {
+                            *interaction = Interaction::None;
                         }
-                        mouse::Event::CursorMoved { position: _ } => {
-                            if self.state.is_drawing {
-                                match self.state.pending {
-                                    Pending::Freehand { mut from, mut to } => match (from, to) {
-                                        (None, None) => {
-                                            from = Some(cursor_position);
-                                            self.state.pending = Pending::Freehand { from, to };
-                                            None
-                                        }
-                                        (Some(_), None) => {
-                                            to = Some(cursor_position);
 
-                                            let message = Some(Strokes {
-                                                brush: self.state.brush_filter,
-                                                from,
-                                                to,
-                                                color: self.state.brush_color,
-                                                size: self.state.brush_size,
-                                            });
-
-                                            from = to;
-                                            to = None;
-                                            self.state.pending = Pending::Freehand { from, to };
-
-                                            message
-                                        }
-                                        _ => None,
-                                    },
+                        // Update first point
+                        match interaction {
+                            // Drawing with a freehand brush
+                            Interaction::Drawing { mut from, to } => match (from, *to) {
+                                (None, None) => {
+                                    from = Some(cursor_position);
+                                    *interaction = Interaction::Drawing { from, to: *to };
+                                    None
                                 }
-                            } else {
+                                _ => None,
+                            },
+
+                            // Erasing with a freehand brush
+                            Interaction::Erasing { mut from, to } => match (from, *to) {
+                                (None, None) => {
+                                    from = Some(cursor_position);
+                                    *interaction = Interaction::Erasing { from, to: *to };
+                                    None
+                                }
+                                _ => None,
+                            },
+                            _ => None,
+                        }
+                    }
+
+                    // Update drawing
+                    mouse::Event::CursorMoved { position: _ } => match interaction {
+                        // Drawing with a freehand brush
+                        Interaction::Drawing { mut from, mut to } => match (from, to) {
+                            (None, None) => {
+                                from = Some(cursor_position);
+                                *interaction = Interaction::Drawing { from, to };
                                 None
                             }
-                        }
-                        mouse::Event::ButtonReleased(mouse::Button::Left) => {
-                            self.state.is_drawing = false;
-                            self.state.pending = Pending::default();
-                            None
-                        }
+                            (Some(_), None) => {
+                                to = Some(cursor_position);
+
+                                let message = Some(Strokes {
+                                    brush: BrushFilter::Brush,
+                                    from,
+                                    to,
+                                    color: self.state.brush_color,
+                                    size: self.state.brush_size,
+                                });
+
+                                from = to;
+                                to = None;
+                                *interaction = Interaction::Drawing { from, to };
+
+                                message
+                            }
+                            _ => None,
+                        },
+
+                        // Erasing with a freehand brush
+                        Interaction::Erasing { mut from, mut to } => match (from, to) {
+                            (None, None) => {
+                                from = Some(cursor_position);
+                                *interaction = Interaction::Erasing { from, to };
+                                None
+                            }
+                            (Some(_), None) => {
+                                to = Some(cursor_position);
+
+                                let message = Some(Strokes {
+                                    brush: BrushFilter::Eraser,
+                                    from,
+                                    to,
+                                    color: self.state.brush_color,
+                                    size: self.state.brush_size,
+                                });
+
+                                from = to;
+                                to = None;
+                                *interaction = Interaction::Erasing { from, to };
+
+                                message
+                            }
+                            _ => None,
+                        },
                         _ => None,
-                    };
-                    (event::Status::Captured, message)
-                }
-                _ => (event::Status::Ignored, None),
-            },
+                    },
+
+                    // Stop drawing
+                    mouse::Event::ButtonReleased(mouse::Button::Left) => {
+                        *interaction = Interaction::None;
+                        None
+                    }
+                    _ => None,
+                };
+                (event::Status::Captured, message)
+            }
             _ => (event::Status::Ignored, None),
         }
     }
 
-    fn mouse_interaction(&self, bounds: Rectangle, cursor: Cursor) -> mouse::Interaction {
+    fn mouse_interaction(
+        &self,
+        interaction: &Interaction,
+        bounds: Rectangle,
+        cursor: Cursor,
+    ) -> mouse::Interaction {
         if cursor.is_over(&bounds) {
-            mouse::Interaction::Crosshair
+            match interaction {
+                Interaction::Drawing { from: _, to: _ } => mouse::Interaction::Crosshair,
+                Interaction::Erasing { from: _, to: _ } => mouse::Interaction::Crosshair,
+                _ => mouse::Interaction::default(),
+            }
         } else {
             mouse::Interaction::default()
         }
     }
 
-    fn draw(&self, bounds: iced::Rectangle, _cursor: canvas::Cursor) -> Vec<canvas::Geometry> {
+    fn draw(
+        &self,
+        _interaction: &Interaction,
+        bounds: iced::Rectangle,
+        _cursor: canvas::Cursor,
+    ) -> Vec<canvas::Geometry> {
         let mut contents = Vec::new();
 
         // Background canvas

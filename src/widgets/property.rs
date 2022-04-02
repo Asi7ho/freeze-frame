@@ -1,11 +1,17 @@
-use iced::{container, Color, Column, Container, Element, Length};
+use iced::{
+    pure::{
+        widget::{container, Column, Container},
+        Element,
+    },
+    Color, Length,
+};
 
 use crate::FreezeFrameMessage;
 
 #[derive(Debug, Default)]
 pub struct PropertyState {}
 
-pub fn view(_property_state: &mut PropertyState) -> Element<FreezeFrameMessage> {
+pub fn view(_property_state: &PropertyState) -> Element<FreezeFrameMessage> {
     let property = Container::new(Column::new())
         .height(Length::Fill)
         .width(Length::Units(225))

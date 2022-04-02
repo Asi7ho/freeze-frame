@@ -1,4 +1,10 @@
-use iced::{canvas, Canvas, Color, Element, Length, Point};
+use iced::{
+    pure::{
+        widget::{canvas, Canvas},
+        Element,
+    },
+    Color, Length,
+};
 
 use super::header::{BrushFilter, GridFilter};
 pub use super::tools::drawing::{Drawable, Strokes};
@@ -14,8 +20,6 @@ pub struct CanvasState {
     pub canvas_width: f32,
     pub canvas_height: f32,
     pub cache: canvas::Cache,
-    pub pending: Pending,
-    pub is_drawing: bool,
     pub brush_color: Color,
     pub brush_size: f32,
     pub brush_filter: BrushFilter,
@@ -23,7 +27,7 @@ pub struct CanvasState {
 }
 
 impl CanvasState {
-    pub fn view<'a>(&'a mut self, strokes: &'a [Strokes]) -> Element<'a, Strokes> {
+    pub fn view<'a>(&'a self, strokes: &'a [Strokes]) -> Element<'a, Strokes> {
         Canvas::new(Drawable {
             state: self,
             strokes,
@@ -35,22 +39,5 @@ impl CanvasState {
 
     pub fn request_redraw(&mut self) {
         self.cache.clear()
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
-pub enum Pending {
-    Freehand {
-        from: Option<Point>,
-        to: Option<Point>,
-    },
-}
-
-impl Default for Pending {
-    fn default() -> Self {
-        Pending::Freehand {
-            from: None,
-            to: None,
-        }
     }
 }

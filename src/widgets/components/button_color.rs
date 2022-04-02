@@ -1,4 +1,7 @@
-use iced::{button, Button, Color, Length, Text};
+use iced::{
+    pure::widget::{button, Button},
+    Color, Length,
+};
 
 use crate::FreezeFrameMessage;
 
@@ -7,13 +10,8 @@ pub struct WButtonColor<'a> {
 }
 
 impl<'a> WButtonColor<'a> {
-    pub fn new(
-        state: &'a mut button::State,
-        message: FreezeFrameMessage,
-        size: u16,
-        style: WButtonColorStyle,
-    ) -> Self {
-        let widget = Button::new(state, Text::new(""))
+    pub fn new(message: FreezeFrameMessage, size: u16, style: WButtonColorStyle) -> Self {
+        let widget = Button::new("")
             .on_press(message)
             .height(Length::Units(size))
             .width(Length::Units(size))

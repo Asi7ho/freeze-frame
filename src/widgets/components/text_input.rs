@@ -1,4 +1,7 @@
-use iced::{text_input, Color, TextInput};
+use iced::{
+    pure::widget::{text_input, TextInput},
+    Color,
+};
 
 use crate::FreezeFrameMessage;
 
@@ -7,17 +10,11 @@ pub struct WTextInput<'a> {
 }
 
 impl<'a> WTextInput<'a> {
-    pub fn new<F>(
-        state: &'a mut text_input::State,
-        placeholder: &str,
-        value: &str,
-        message: F,
-        style: WTextInputStyle,
-    ) -> Self
+    pub fn new<F>(placeholder: &str, value: &str, message: F, style: WTextInputStyle) -> Self
     where
         F: 'static + Fn(String) -> FreezeFrameMessage,
     {
-        let widget = TextInput::new(state, placeholder, value, message).style(style);
+        let widget = TextInput::new(placeholder, value, message).style(style);
         Self { widget }
     }
 }
