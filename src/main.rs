@@ -23,7 +23,7 @@ mod widgets;
 fn main() -> iced::Result {
     let settings = Settings {
         window: window::Settings {
-            min_size: Some((1330, 700)),
+            min_size: Some((1320, 700)),
             ..window::Settings::default()
         },
         // antialiasing: true,
@@ -78,6 +78,10 @@ impl Application for FreezeFrame {
 
     fn title(&self) -> String {
         String::from("Freeze Frame")
+    }
+
+    fn background_color(&self) -> Color {
+        return Color::from_rgb8(34, 34, 34);
     }
 
     fn update(&mut self, message: FreezeFrameMessage) -> Command<FreezeFrameMessage> {

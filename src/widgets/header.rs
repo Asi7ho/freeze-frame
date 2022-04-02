@@ -250,10 +250,9 @@ impl container::StyleSheet for HeaderStyle {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(Color::WHITE),
-            background: Some(Color::from_rgb8(34, 34, 34).into()),
             border_radius: 0.0,
             border_width: 0.0,
-            border_color: Color::TRANSPARENT,
+            ..container::Style::default()
         }
     }
 }

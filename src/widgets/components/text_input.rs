@@ -40,12 +40,7 @@ impl text_input::StyleSheet for WTextInputStyle {
     }
 
     fn focused(&self) -> text_input::Style {
-        text_input::Style {
-            background: self.background.into(),
-            border_radius: self.border_radius,
-            border_width: self.border_width,
-            border_color: self.border_color,
-        }
+        self.active()
     }
 
     fn placeholder_color(&self) -> Color {
