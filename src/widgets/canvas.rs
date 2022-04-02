@@ -1,6 +1,6 @@
 use iced::{
     pure::{
-        widget::{canvas, Canvas},
+        widget::{canvas, Canvas, Container},
         Element,
     },
     Color, Length,
@@ -28,13 +28,20 @@ pub struct CanvasState {
 
 impl CanvasState {
     pub fn view<'a>(&'a self, strokes: &'a [Strokes]) -> Element<'a, Strokes> {
-        Canvas::new(Drawable {
+        let canvas = Canvas::new(Drawable {
             state: self,
             strokes,
         })
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .into()
+        .width(Length::Units(self.canvas_width as u16))
+        .height(Length::Units(self.canvas_height as u16));
+
+        let container = Container::new(canvas)
+            .height(Length::Fill)
+            .width(Length::Fill)
+            .center_x()
+            .center_y();
+
+        return container.into();
     }
 
     pub fn request_redraw(&mut self) {
