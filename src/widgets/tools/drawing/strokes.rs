@@ -1,5 +1,5 @@
 use iced::{
-    canvas::{Frame, Path, Stroke},
+    canvas::{Frame, LineCap, Path, Stroke},
     Color, Point,
 };
 
@@ -23,6 +23,7 @@ impl Strokes {
                 frame.stroke(
                     &freehand_stroke,
                     Stroke::default()
+                        .with_line_cap(LineCap::Round)
                         .with_color(stroke.color)
                         .with_width(stroke.size),
                 );
