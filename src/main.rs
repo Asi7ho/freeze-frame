@@ -9,8 +9,9 @@ use iced::{
 
 use widgets::{
     canvas::{CanvasMessage, CanvasState, Strokes},
-    header::{GridFilter, HeaderMessage, HeaderState},
-    property::PropertyState,
+    header::{BrushFilter, GridFilter, HeaderMessage, HeaderState},
+    layers::{LayerMessage, LayerState},
+    property::{PropertyMessage, PropertyState},
     timeline::TimelineState,
 };
 
@@ -40,12 +41,14 @@ pub struct FreezeFrame {
     strokes: Vec<Strokes>,
     timeline_state: TimelineState,
     property_state: PropertyState,
+    layer_state: LayerState,
 }
 
 #[derive(Debug, Clone)]
 pub enum FreezeFrameMessage {
     HeaderInteraction(HeaderMessage),
     CanvasInteraction(CanvasMessage),
+    PropertyInteraction(PropertyMessage),
     Ignore,
 }
 
@@ -66,10 +69,17 @@ impl Application for FreezeFrame {
             brush_size: 1.0,
             ..CanvasState::default()
         };
+        let property_state = PropertyState {
+            brush_slider_value: 1.0,
+            eraser_slider_value: 1.0,
+            resolution: (canvas_state.canvas_width, canvas_state.canvas_height),
+            ..PropertyState::default()
+        };
         (
             Self {
                 header_state,
                 canvas_state,
+                property_state,
                 ..FreezeFrame::default()
             },
             Command::none(),
@@ -92,20 +102,21 @@ impl Application for FreezeFrame {
                 }
                 widgets::header::HeaderMessage::BrushControlsChange(filter) => {
                     self.header_state.brush_filter = filter;
-                    self.canvas_state.brush_filter = filter
+                    self.canvas_state.brush_filter = filter;
+                    self.property_state.filter = filter;
                 }
                 widgets::header::HeaderMessage::GridToolSelected(tool) => {
                     if tool == self.header_state.grid_filter {
                         self.header_state.grid_filter = GridFilter::Ignore;
                     } else {
-                        self.header_state.grid_filter = tool
+                        self.header_state.grid_filter = tool;
                     }
                 }
                 widgets::header::HeaderMessage::ChangePalette => (),
                 widgets::header::HeaderMessage::ChangeColor(id_row_col) => {
                     self.header_state.brush_color_id = id_row_col;
                     self.canvas_state.brush_color =
-                        self.header_state.color_palette.colors[id_row_col.0 * 5 + id_row_col.1]
+                        self.header_state.color_palette.colors[id_row_col.0 * 5 + id_row_col.1];
                 }
                 widgets::header::HeaderMessage::AddColor => {
                     let step = Uniform::new(0, 256);
@@ -115,10 +126,10 @@ impl Application for FreezeFrame {
                     let blue = step.sample(&mut rng) as u8;
 
                     let color = Color::from_rgb8(red, green, blue);
-                    self.header_state.color_palette.colors.push(color)
+                    self.header_state.color_palette.colors.push(color);
                 }
                 widgets::header::HeaderMessage::Scrolled(offset) => {
-                    self.header_state.color_scroll_offset = offset
+                    self.header_state.color_scroll_offset = offset;
                 }
             },
             FreezeFrameMessage::CanvasInteraction(m) => match m {
@@ -135,6 +146,30 @@ impl Application for FreezeFrame {
                     self.strokes.clear();
                 }
             },
+            FreezeFrameMessage::PropertyInteraction(m) => match m {
+                PropertyMessage::SliderChanged(value) => {
+                    if self.property_state.filter == BrushFilter::Brush {
+                        self.property_state.brush_slider_value = value;
+                    } else if self.property_state.filter == BrushFilter::Eraser {
+                        self.property_state.eraser_slider_value = value;
+                    }
+                    self.canvas_state.brush_size = value;
+                }
+                PropertyMessage::ResolutionXChanged(x) => {
+                    let resolution_x = x.parse::<f32>();
+                    if resolution_x.is_ok() {
+                        self.canvas_state.canvas_width = resolution_x.unwrap();
+                        self.property_state.resolution.0 = self.canvas_state.canvas_width;
+                    }
+                }
+                PropertyMessage::ResolutionYChanged(y) => {
+                    let resolution_y = y.parse::<f32>();
+                    if resolution_y.is_ok() {
+                        self.canvas_state.canvas_height = resolution_y.unwrap();
+                        self.property_state.resolution.1 = self.canvas_state.canvas_height;
+                    }
+                }
+            },
             FreezeFrameMessage::Ignore => (),
         };
 
@@ -149,6 +184,7 @@ impl Application for FreezeFrame {
             .map(|stroke| FreezeFrameMessage::CanvasInteraction(CanvasMessage::AddStrokes(stroke)));
         let timeline_view = widgets::timeline::view(&self.timeline_state);
         let property_view = widgets::property::view(&self.property_state);
+        let layer_view = widgets::layers::view(&self.layer_state);
 
         let main_view = Column::new()
             .push(header_view)
@@ -156,7 +192,7 @@ impl Application for FreezeFrame {
             .push(timeline_view)
             .height(Length::Fill)
             .width(Length::Fill);
-        let right_bar_view = Column::new().push(property_view);
+        let right_bar_view = Column::new().push(property_view).push(layer_view);
 
         return Container::new(Row::new().push(main_view).push(right_bar_view)).into();
     }
