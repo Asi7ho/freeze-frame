@@ -12,7 +12,7 @@ use crate::widgets::components::text_input::{WTextInput, WTextInputStyle};
 use crate::FreezeFrameMessage;
 
 use crate::utils::svg::{
-    ADD, BOTTOM_ARROW, BRUSH, ERASER, FILL, GEOMETRY, GRID, ICON_SIZE, POINTER, TEXT,
+    ADD, BOTTOM_ARROW, BRUSH, ERASER, FILL, GEOMETRY, GRID, ICON_SIZE, POINTER, TEXT, TRASH,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -45,14 +45,15 @@ impl Default for ColorPalette {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum GridFilter {
+pub enum ExtraFilter {
     Grid,
+    Trash,
     Ignore,
 }
 
-impl Default for GridFilter {
+impl Default for ExtraFilter {
     fn default() -> Self {
-        GridFilter::Ignore
+        ExtraFilter::Ignore
     }
 }
 
@@ -63,14 +64,14 @@ pub struct HeaderState {
     pub brush_color_id: (usize, usize),
     pub color_palette: ColorPalette,
     pub color_scroll_offset: f32,
-    pub grid_filter: GridFilter,
+    pub extra_filter: ExtraFilter,
 }
 
 #[derive(Debug, Clone)]
 pub enum HeaderMessage {
     SceneTitleChange(String),
     BrushControlsChange(BrushFilter),
-    GridToolSelected(GridFilter),
+    GridToolSelected(ExtraFilter),
     ChangePalette,
     ChangeColor((usize, usize)),
     AddColor,
@@ -216,13 +217,18 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
         .padding(10)
     };
 
-    let grid_tool = Container::new(
+    let extra_tool = Container::new(
         Row::new()
             .spacing(5)
             .push(controller_button(
                 GRID,
-                GridFilter::Grid,
-                header_state.grid_filter,
+                ExtraFilter::Grid,
+                header_state.extra_filter,
+            ))
+            .push(controller_button(
+                TRASH,
+                ExtraFilter::Trash,
+                header_state.extra_filter,
             ))
             .align_items(Alignment::Center),
     );
@@ -234,7 +240,7 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
             .push(scene_title)
             .push(brush_tools)
             .push(color_tools)
-            .push(grid_tool)
+            .push(extra_tool)
             .align_items(Alignment::Center),
     )
     .height(Length::Units(45))

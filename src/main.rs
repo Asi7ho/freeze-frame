@@ -9,7 +9,7 @@ use iced::{
 
 use widgets::{
     canvas::{CanvasMessage, CanvasState, Strokes},
-    header::{BrushFilter, GridFilter, HeaderMessage, HeaderState},
+    header::{BrushFilter, ExtraFilter, HeaderMessage, HeaderState},
     layers::{LayerMessage, LayerState},
     property::{PropertyMessage, PropertyState},
     timeline::TimelineState,
@@ -106,10 +106,23 @@ impl Application for FreezeFrame {
                     self.property_state.filter = filter;
                 }
                 widgets::header::HeaderMessage::GridToolSelected(tool) => {
-                    if tool == self.header_state.grid_filter {
-                        self.header_state.grid_filter = GridFilter::Ignore;
+                    if tool == ExtraFilter::Trash {
+                        self.canvas_state = CanvasState {
+                            canvas_width: self.canvas_state.canvas_width,
+                            canvas_height: self.canvas_state.canvas_height,
+                            brush_color: self.header_state.color_palette.colors[0],
+                            brush_filter: self.header_state.brush_filter,
+                            brush_size: 1.0,
+                            ..CanvasState::default()
+                        };
+                        self.strokes.clear();
+                        self.header_state.extra_filter = ExtraFilter::Ignore;
                     } else {
-                        self.header_state.grid_filter = tool;
+                        if tool == self.header_state.extra_filter {
+                            self.header_state.extra_filter = ExtraFilter::Ignore;
+                        } else {
+                            self.header_state.extra_filter = tool;
+                        }
                     }
                 }
                 widgets::header::HeaderMessage::ChangePalette => (),
@@ -136,14 +149,6 @@ impl Application for FreezeFrame {
                 CanvasMessage::AddStrokes(stroke) => {
                     self.strokes.push(stroke);
                     self.canvas_state.request_redraw();
-                }
-                CanvasMessage::Clear => {
-                    self.canvas_state = CanvasState {
-                        canvas_width: self.canvas_state.canvas_width,
-                        canvas_height: self.canvas_state.canvas_height,
-                        ..CanvasState::default()
-                    };
-                    self.strokes.clear();
                 }
             },
             FreezeFrameMessage::PropertyInteraction(m) => match m {

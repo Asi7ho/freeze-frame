@@ -6,13 +6,12 @@ use iced::{
     Color, Length,
 };
 
-use super::header::{BrushFilter, GridFilter};
+use super::header::{BrushFilter, ExtraFilter};
 pub use super::tools::drawing::{Drawable, Strokes};
 
 #[derive(Debug, Clone)]
 pub enum CanvasMessage {
     AddStrokes(Strokes),
-    Clear,
 }
 
 #[derive(Debug, Default)]
@@ -23,7 +22,7 @@ pub struct CanvasState {
     pub brush_color: Color,
     pub brush_size: f32,
     pub brush_filter: BrushFilter,
-    pub grid_filer: GridFilter,
+    pub extra_filer: ExtraFilter,
 }
 
 impl CanvasState {
