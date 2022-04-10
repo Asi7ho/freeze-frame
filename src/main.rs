@@ -11,7 +11,7 @@ use widgets::{
     canvas::{CanvasMessage, CanvasState, Strokes},
     header::{BrushFilter, ExtraFilter, HeaderMessage, HeaderState},
     layers::{LayerMessage, LayerState},
-    property::{PropertyMessage, PropertyState},
+    property::{GeometryForm, PropertyMessage, PropertyState},
     timeline::TimelineState,
 };
 
@@ -67,12 +67,14 @@ impl Application for FreezeFrame {
             canvas_height: 435.0,
             brush_color: header_state.color_palette.colors[0],
             brush_size: 1.0,
+            geometry_form: Some(GeometryForm::default()),
             ..CanvasState::default()
         };
         let property_state = PropertyState {
             brush_slider_value: 1.0,
             eraser_slider_value: 1.0,
             resolution: (canvas_state.canvas_width, canvas_state.canvas_height),
+            geometry_form: Some(GeometryForm::default()),
             ..PropertyState::default()
         };
         (
@@ -173,6 +175,10 @@ impl Application for FreezeFrame {
                         self.canvas_state.canvas_height = resolution_y.unwrap();
                         self.property_state.resolution.1 = self.canvas_state.canvas_height;
                     }
+                }
+                PropertyMessage::GeometryFormChanged(form) => {
+                    self.property_state.geometry_form = Some(form);
+                    self.canvas_state.geometry_form = self.property_state.geometry_form;
                 }
             },
             FreezeFrameMessage::Ignore => (),

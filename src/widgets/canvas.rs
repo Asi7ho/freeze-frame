@@ -6,8 +6,11 @@ use iced::{
     Color, Length,
 };
 
-use super::header::{BrushFilter, ExtraFilter};
 pub use super::tools::drawing::{Drawable, Strokes};
+use super::{
+    header::{BrushFilter, ExtraFilter},
+    property::GeometryForm,
+};
 
 #[derive(Debug, Clone)]
 pub enum CanvasMessage {
@@ -22,6 +25,7 @@ pub struct CanvasState {
     pub brush_color: Color,
     pub brush_size: f32,
     pub brush_filter: BrushFilter,
+    pub geometry_form: Option<GeometryForm>,
     pub extra_filer: ExtraFilter,
 }
 

@@ -1,7 +1,7 @@
 use iced::{
     alignment::Horizontal,
     pure::{
-        widget::{container, Column, Container, Row, Text},
+        widget::{container, pick_list, Column, Container, PickList, Row, Text},
         Element,
     },
     Color, Length,
@@ -14,12 +14,42 @@ use crate::widgets::header::BrushFilter;
 
 use super::components::text_input::{WTextInput, WTextInputStyle};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GeometryForm {
+    Rectangle,
+    Circle,
+}
+
+impl Default for GeometryForm {
+    fn default() -> GeometryForm {
+        GeometryForm::Rectangle
+    }
+}
+
+impl GeometryForm {
+    const ALL: [GeometryForm; 2] = [GeometryForm::Rectangle, GeometryForm::Circle];
+}
+
+impl std::fmt::Display for GeometryForm {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                GeometryForm::Rectangle => "Rectangle",
+                GeometryForm::Circle => "Circle",
+            }
+        )
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct PropertyState {
     pub filter: BrushFilter,
     pub resolution: (f32, f32),
     pub brush_slider_value: f32,
     pub eraser_slider_value: f32,
+    pub geometry_form: Option<GeometryForm>,
 }
 
 #[derive(Debug, Clone)]
@@ -27,6 +57,7 @@ pub enum PropertyMessage {
     SliderChanged(f32),
     ResolutionXChanged(String),
     ResolutionYChanged(String),
+    GeometryFormChanged(GeometryForm),
 }
 
 pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
@@ -39,6 +70,7 @@ pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
         BrushFilter::Pointer => canvas_properties(&property_state.resolution),
         BrushFilter::Brush => brush_properties(&property_state.brush_slider_value),
         BrushFilter::Eraser => brush_properties(&property_state.eraser_slider_value),
+        BrushFilter::Geometry => geometry_properties(&property_state.geometry_form),
         _ => Column::new(),
     };
 
@@ -132,6 +164,19 @@ fn brush_properties(slider_value: &f32) -> Column<FreezeFrameMessage> {
     return properties;
 }
 
+fn geometry_properties(geometry_form: &Option<GeometryForm>) -> Column<FreezeFrameMessage> {
+    let form_text = Text::new("Form: ").color(Color::WHITE);
+    let form_picklist = PickList::new(&GeometryForm::ALL[..], *geometry_form, |form| {
+        FreezeFrameMessage::PropertyInteraction(PropertyMessage::GeometryFormChanged(form))
+    });
+    let geometry_list = Row::new().push(form_text).push(form_picklist).spacing(15);
+    let properties = Column::new()
+        .push(geometry_list)
+        .padding(10)
+        .width(Length::Units(225));
+    return properties;
+}
+
 pub struct PropertyStyle;
 
 impl container::StyleSheet for PropertyStyle {
@@ -145,3 +190,19 @@ impl container::StyleSheet for PropertyStyle {
         }
     }
 }
+
+// pub struct WPickListStyle {}
+
+// impl pick_list::StyleSheet for WPickListStyle {
+//     fn menu(&self) -> menu::Style {
+//         todo!()
+//     }
+
+//     fn active(&self) -> iced::pick_list::Style {
+//         todo!()
+//     }
+
+//     fn hovered(&self) -> iced::pick_list::Style {
+//         todo!()
+//     }
+// }

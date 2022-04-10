@@ -21,6 +21,10 @@ pub enum Interaction {
         from: Option<Point>,
         to: Option<Point>,
     },
+    Geometry {
+        from: Option<Point>,
+        to: Option<Point>,
+    },
 }
 
 impl Default for Interaction {
@@ -75,6 +79,11 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                 from: None,
                                 to: None,
                             };
+                        } else if self.state.brush_filter == BrushFilter::Geometry {
+                            *interaction = Interaction::Geometry {
+                                from: None,
+                                to: None,
+                            };
                         } else {
                             *interaction = Interaction::None;
                         }
@@ -96,6 +105,16 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                 (None, None) => {
                                     from = Some(cursor_position);
                                     *interaction = Interaction::Erasing { from, to: *to };
+                                    None
+                                }
+                                _ => None,
+                            },
+
+                            // Drawing a geometry form
+                            Interaction::Geometry { mut from, to } => match (from, *to) {
+                                (None, None) => {
+                                    from = Some(cursor_position);
+                                    *interaction = Interaction::Geometry { from, to: *to };
                                     None
                                 }
                                 _ => None,
@@ -122,6 +141,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                     to,
                                     color: self.state.brush_color,
                                     size: self.state.brush_size,
+                                    geometry_form: None,
                                 });
 
                                 from = to;
@@ -149,6 +169,7 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                     to,
                                     color: Color::WHITE,
                                     size: self.state.brush_size,
+                                    geometry_form: None,
                                 });
 
                                 from = to;
@@ -163,10 +184,35 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                     },
 
                     // Stop drawing
-                    mouse::Event::ButtonReleased(mouse::Button::Left) => {
-                        *interaction = Interaction::None;
-                        None
-                    }
+                    mouse::Event::ButtonReleased(mouse::Button::Left) => match interaction {
+                        Interaction::Geometry { from, to } => match (*from, *to) {
+                            (Some(_), None) => {
+                                *to = Some(cursor_position);
+
+                                let message = Some(Strokes {
+                                    brush: BrushFilter::Geometry,
+                                    from: *from,
+                                    to: *to,
+                                    color: self.state.brush_color,
+                                    size: self.state.brush_size,
+                                    geometry_form: self.state.geometry_form,
+                                });
+
+                                *interaction = Interaction::None;
+
+                                message
+                            }
+                            _ => {
+                                *interaction = Interaction::None;
+                                None
+                            }
+                        },
+
+                        _ => {
+                            *interaction = Interaction::None;
+                            None
+                        }
+                    },
                     _ => None,
                 };
                 (event::Status::Captured, message)

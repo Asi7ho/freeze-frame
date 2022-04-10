@@ -1,9 +1,9 @@
 use iced::{
-    canvas::{Frame, LineCap, Path, Stroke},
-    Color, Point,
+    canvas::{Frame, LineCap, LineJoin, Path, Stroke},
+    Color, Point, Size,
 };
 
-use crate::widgets::header::BrushFilter;
+use crate::widgets::{header::BrushFilter, property::GeometryForm};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Strokes {
@@ -12,21 +12,55 @@ pub struct Strokes {
     pub to: Option<Point>,
     pub color: Color,
     pub size: f32,
+    pub geometry_form: Option<GeometryForm>,
 }
 
 impl Strokes {
     pub fn draw_all(strokes: &[Strokes], frame: &mut Frame) {
         for stroke in strokes {
-            if stroke.from.is_some() && stroke.to.is_some() {
-                let freehand_stroke = Path::line(stroke.from.unwrap(), stroke.to.unwrap());
+            match stroke.brush {
+                BrushFilter::Brush | BrushFilter::Eraser => {
+                    if stroke.from.is_some() && stroke.to.is_some() {
+                        let freehand_stroke = Path::line(stroke.from.unwrap(), stroke.to.unwrap());
 
-                frame.stroke(
-                    &freehand_stroke,
-                    Stroke::default()
-                        .with_line_cap(LineCap::Round)
-                        .with_color(stroke.color)
-                        .with_width(stroke.size),
-                );
+                        frame.stroke(
+                            &freehand_stroke,
+                            Stroke::default()
+                                .with_line_cap(LineCap::Round)
+                                .with_color(stroke.color)
+                                .with_width(stroke.size),
+                        );
+                    }
+                }
+                BrushFilter::Geometry => {
+                    if stroke.from.is_some() && stroke.to.is_some() {
+                        let geometry_stroke = match stroke.geometry_form {
+                            Some(g) => match g {
+                                GeometryForm::Rectangle => {
+                                    let size = Size {
+                                        width: stroke.to.unwrap().x - stroke.from.unwrap().x,
+                                        height: stroke.to.unwrap().y - stroke.from.unwrap().y,
+                                    };
+                                    Path::rectangle(stroke.from.unwrap(), size)
+                                }
+                                GeometryForm::Circle => {
+                                    let radius = stroke.to.unwrap().distance(stroke.from.unwrap());
+                                    Path::circle(stroke.from.unwrap(), radius)
+                                }
+                            },
+                            None => return,
+                        };
+
+                        frame.stroke(
+                            &geometry_stroke,
+                            Stroke::default()
+                                .with_line_join(LineJoin::Round)
+                                .with_color(stroke.color)
+                                .with_width(stroke.size),
+                        );
+                    }
+                }
+                _ => (),
             }
         }
     }
