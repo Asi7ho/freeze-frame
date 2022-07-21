@@ -102,6 +102,12 @@ impl Application for FreezeFrame {
                     self.header_state.brush_filter = filter;
                     self.canvas_state.brush_filter = filter;
                     self.property_state.filter = filter;
+
+                    if self.property_state.filter == BrushFilter::Brush {
+                        self.canvas_state.brush_size = self.property_state.brush_slider_value;
+                    } else if self.property_state.filter == BrushFilter::Eraser {
+                        self.canvas_state.brush_size = self.property_state.eraser_slider_value;
+                    }
                 }
                 HeaderMessage::GridToolSelected(tool) => {
                     if tool == ExtraFilter::Trash {
