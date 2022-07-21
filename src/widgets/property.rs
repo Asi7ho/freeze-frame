@@ -1,7 +1,7 @@
 use iced::{
     alignment::Horizontal,
     pure::{
-        widget::{Column, Container, PickList, Row, Text},
+        widget::{Column, Container, PickList, Row, Slider, Text, TextInput},
         Element,
     },
     Color, Length,
@@ -10,7 +10,6 @@ use iced::{
 use crate::message::{FreezeFrameMessage, PropertyMessage};
 
 use super::{
-    components::{WSlider, WTextInput},
     header::BrushFilter,
     style::{
         WContainerState, WContainerStyle, WSliderState, WSliderStyle, WTextInputState,
@@ -80,32 +79,22 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
     let resolution_x_text = Text::new("Width: ").color(Color::WHITE);
     let resolution_y_text = Text::new("Height: ").color(Color::WHITE);
 
-    let input_x = WTextInput::new(
-        &resolution.0.to_string(),
-        &resolution.0.to_string(),
-        |x| FreezeFrameMessage::PropertyInteraction(PropertyMessage::ResolutionXChanged(x)),
-        WTextInputStyle {
-            state: WTextInputState::Properties,
-        },
-    );
-    let input_y = WTextInput::new(
-        &resolution.1.to_string(),
-        &resolution.1.to_string(),
-        |y| FreezeFrameMessage::PropertyInteraction(PropertyMessage::ResolutionYChanged(y)),
-        WTextInputStyle {
-            state: WTextInputState::Properties,
-        },
-    );
+    let input_x = TextInput::new(&resolution.0.to_string(), &resolution.0.to_string(), |x| {
+        FreezeFrameMessage::PropertyInteraction(PropertyMessage::ResolutionXChanged(x))
+    })
+    .style(WTextInputStyle {
+        state: WTextInputState::Properties,
+    });
+    let input_y = TextInput::new(&resolution.1.to_string(), &resolution.1.to_string(), |y| {
+        FreezeFrameMessage::PropertyInteraction(PropertyMessage::ResolutionYChanged(y))
+    })
+    .style(WTextInputStyle {
+        state: WTextInputState::Properties,
+    });
 
-    let resolution_x = Row::new()
-        .push(resolution_x_text)
-        .push(input_x.widget)
-        .spacing(15);
+    let resolution_x = Row::new().push(resolution_x_text).push(input_x).spacing(15);
 
-    let resolution_y = Row::new()
-        .push(resolution_y_text)
-        .push(input_y.widget)
-        .spacing(15);
+    let resolution_y = Row::new().push(resolution_y_text).push(input_y).spacing(15);
 
     let resolution = Column::new()
         .push(resolution_x)
@@ -119,18 +108,16 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
 
 fn brush_properties(slider_value: &f32) -> Column<FreezeFrameMessage> {
     let size_text = Text::new("Size: ").color(Color::WHITE);
-    let size_slider = WSlider::new(
-        1.0..=50.0,
-        *slider_value,
-        |v| FreezeFrameMessage::PropertyInteraction(PropertyMessage::SliderChanged(v)),
-        WSliderStyle {
-            state: WSliderState::Properties,
-        },
-    );
+    let size_slider = Slider::new(1.0..=50.0, *slider_value, |v| {
+        FreezeFrameMessage::PropertyInteraction(PropertyMessage::SliderChanged(v))
+    })
+    .style(WSliderStyle {
+        state: WSliderState::Properties,
+    });
     let size_ind = Text::new(slider_value.to_string()).color(Color::WHITE);
     let size = Row::new()
         .push(size_text)
-        .push(size_slider.widget)
+        .push(size_slider)
         .push(size_ind)
         .spacing(15);
     let properties = Column::new()

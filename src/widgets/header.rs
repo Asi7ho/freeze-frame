@@ -1,6 +1,6 @@
 use iced::{
     pure::{
-        widget::{Container, Row, Scrollable},
+        widget::{Button, Container, Row, Scrollable, TextInput},
         Element,
     },
     svg, Alignment, Color, Length, Svg,
@@ -14,7 +14,7 @@ use crate::{
 };
 
 use super::{
-    components::{WButtonIcon, WColorPalette, WTextInput},
+    components::ColorPalette,
     style::{
         WButtonState, WButtonStyle, WContainerState, WContainerStyle, WTextInputState,
         WTextInputStyle,
@@ -33,11 +33,11 @@ pub enum BrushFilter {
 }
 
 #[derive(Debug, Clone)]
-pub struct ColorPalette {
+pub struct Colors {
     pub colors: Vec<Color>,
 }
 
-impl Default for ColorPalette {
+impl Default for Colors {
     fn default() -> Self {
         Self {
             colors: vec![Color::BLACK],
@@ -58,7 +58,7 @@ pub struct HeaderState {
     pub scene_title_input: String,
     pub brush_filter: BrushFilter,
     pub brush_color_id: (usize, usize),
-    pub color_palette: ColorPalette,
+    pub color_palette: Colors,
     pub color_scroll_offset: f32,
     pub extra_filter: ExtraFilter,
 }
@@ -72,15 +72,12 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
     };
 
     // Scene title
-    let scene_title = WTextInput::new(
-        "Scene Title",
-        &header_state.scene_title_input,
-        |s| FreezeFrameMessage::HeaderInteraction(HeaderMessage::SceneTitleChange(s)),
-        WTextInputStyle {
-            state: WTextInputState::SceneTitle,
-        },
-    )
-    .widget
+    let scene_title = TextInput::new("Scene Title", &header_state.scene_title_input, |s| {
+        FreezeFrameMessage::HeaderInteraction(HeaderMessage::SceneTitleChange(s))
+    })
+    .style(WTextInputStyle {
+        state: WTextInputState::SceneTitle,
+    })
     .size(26)
     .padding(10)
     .width(Length::Units(250));
@@ -93,13 +90,12 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
             state = WButtonState::IconSelected;
         }
 
-        WButtonIcon::new(
-            icon,
-            FreezeFrameMessage::HeaderInteraction(HeaderMessage::BrushControlsChange(filter)),
-            WButtonStyle { state },
-        )
-        .widget
-        .padding(10)
+        Button::new(icon)
+            .on_press(FreezeFrameMessage::HeaderInteraction(
+                HeaderMessage::BrushControlsChange(filter),
+            ))
+            .style(WButtonStyle { state })
+            .padding(10)
     };
 
     let brush_tools = Container::new(
@@ -142,18 +138,15 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
     let controllers_button = |icon_byte, message| {
         let icon = create_icon(icon_byte);
 
-        WButtonIcon::new(
-            icon,
-            message,
-            WButtonStyle {
+        Button::new(icon)
+            .on_press(message)
+            .style(WButtonStyle {
                 state: WButtonState::IconNotSelected,
-            },
-        )
-        .widget
-        .padding(10)
+            })
+            .padding(10)
     };
 
-    let color_palette = WColorPalette::new(
+    let color_palette = ColorPalette::new(
         header_state.color_palette.colors.clone(),
         5,
         header_state.brush_color_id,
@@ -187,13 +180,12 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
             state = WButtonState::IconSelected;
         }
 
-        WButtonIcon::new(
-            icon,
-            FreezeFrameMessage::HeaderInteraction(HeaderMessage::GridToolSelected(filter)),
-            WButtonStyle { state },
-        )
-        .widget
-        .padding(10)
+        Button::new(icon)
+            .on_press(FreezeFrameMessage::HeaderInteraction(
+                HeaderMessage::GridToolSelected(filter),
+            ))
+            .style(WButtonStyle { state })
+            .padding(10)
     };
 
     let extra_tool = Container::new(

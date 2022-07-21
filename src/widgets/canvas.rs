@@ -21,7 +21,7 @@ pub struct CanvasState {
     pub brush_size: f32,
     pub brush_filter: BrushFilter,
     pub geometry_form: Option<GeometryForm>,
-    pub extra_filer: ExtraFilter,
+    pub extra_filter: ExtraFilter,
 }
 
 impl CanvasState {
