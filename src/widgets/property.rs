@@ -1,29 +1,28 @@
 use iced::{
     alignment::Horizontal,
     pure::{
-        widget::{container, pick_list, Column, Container, PickList, Row, Text},
+        widget::{Column, Container, PickList, Row, Text},
         Element,
     },
     Color, Length,
 };
 
-use crate::FreezeFrameMessage;
+use crate::message::{FreezeFrameMessage, PropertyMessage};
 
-use crate::widgets::components::slider::{WSlider, WSliderStyle};
-use crate::widgets::header::BrushFilter;
+use super::{
+    components::{WSlider, WTextInput},
+    header::BrushFilter,
+    style::{
+        WContainerState, WContainerStyle, WSliderState, WSliderStyle, WTextInputState,
+        WTextInputStyle,
+    },
+};
 
-use super::components::text_input::{WTextInput, WTextInputStyle};
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum GeometryForm {
+    #[default]
     Rectangle,
     Circle,
-}
-
-impl Default for GeometryForm {
-    fn default() -> GeometryForm {
-        GeometryForm::Rectangle
-    }
 }
 
 impl GeometryForm {
@@ -52,14 +51,6 @@ pub struct PropertyState {
     pub geometry_form: Option<GeometryForm>,
 }
 
-#[derive(Debug, Clone)]
-pub enum PropertyMessage {
-    SliderChanged(f32),
-    ResolutionXChanged(String),
-    ResolutionYChanged(String),
-    GeometryFormChanged(GeometryForm),
-}
-
 pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
     let heading = Text::new("Properties")
         .size(22)
@@ -78,7 +69,9 @@ pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
         .height(Length::Fill)
         .width(Length::Units(225))
         .padding(10)
-        .style(PropertyStyle);
+        .style(WContainerStyle {
+            state: WContainerState::RightBar,
+        });
 
     return container.into();
 }
@@ -92,13 +85,7 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
         &resolution.0.to_string(),
         |x| FreezeFrameMessage::PropertyInteraction(PropertyMessage::ResolutionXChanged(x)),
         WTextInputStyle {
-            background: Color::from_rgb8(34, 34, 34),
-            border_radius: 0.0,
-            border_width: 0.0,
-            border_color: Color::TRANSPARENT,
-            placeholder_color: Color::WHITE,
-            value_color: Color::WHITE,
-            selection_color: Color::from_rgb8(64, 64, 64),
+            state: WTextInputState::Properties,
         },
     );
     let input_y = WTextInput::new(
@@ -106,13 +93,7 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
         &resolution.1.to_string(),
         |y| FreezeFrameMessage::PropertyInteraction(PropertyMessage::ResolutionYChanged(y)),
         WTextInputStyle {
-            background: Color::from_rgb8(34, 34, 34),
-            border_radius: 0.0,
-            border_width: 0.0,
-            border_color: Color::TRANSPARENT,
-            placeholder_color: Color::WHITE,
-            value_color: Color::WHITE,
-            selection_color: Color::from_rgb8(64, 64, 64),
+            state: WTextInputState::Properties,
         },
     );
 
@@ -143,12 +124,7 @@ fn brush_properties(slider_value: &f32) -> Column<FreezeFrameMessage> {
         *slider_value,
         |v| FreezeFrameMessage::PropertyInteraction(PropertyMessage::SliderChanged(v)),
         WSliderStyle {
-            rail_colors: (
-                Color::from_rgb8(187, 182, 197),
-                Color::from_rgb8(187, 182, 197),
-            ),
-            handle_radius: 8.0,
-            handle_color: Color::from_rgb8(187, 182, 197),
+            state: WSliderState::Properties,
         },
     );
     let size_ind = Text::new(slider_value.to_string()).color(Color::WHITE);
@@ -176,33 +152,3 @@ fn geometry_properties(geometry_form: &Option<GeometryForm>) -> Column<FreezeFra
         .width(Length::Units(225));
     return properties;
 }
-
-pub struct PropertyStyle;
-
-impl container::StyleSheet for PropertyStyle {
-    fn style(&self) -> container::Style {
-        container::Style {
-            text_color: None,
-            background: Some(Color::from_rgb8(25, 25, 25).into()),
-            border_radius: 0.0,
-            border_width: 0.0,
-            ..container::Style::default()
-        }
-    }
-}
-
-// pub struct WPickListStyle {}
-
-// impl pick_list::StyleSheet for WPickListStyle {
-//     fn menu(&self) -> menu::Style {
-//         todo!()
-//     }
-
-//     fn active(&self) -> iced::pick_list::Style {
-//         todo!()
-//     }
-
-//     fn hovered(&self) -> iced::pick_list::Style {
-//         todo!()
-//     }
-// }

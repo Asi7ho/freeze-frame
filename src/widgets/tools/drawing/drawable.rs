@@ -1,17 +1,20 @@
-use iced::pure::widget::canvas::{
-    self,
-    event::{self, Event},
-    Cursor, Frame, Path,
+use iced::{
+    mouse,
+    pure::widget::canvas::{
+        self,
+        event::{self, Event},
+        Cursor, Frame, Path,
+    },
+    Color, Point, Rectangle, Size,
 };
-use iced::{mouse, Color, Point, Rectangle, Size};
 
-use crate::widgets::canvas::CanvasState;
-use crate::widgets::header::BrushFilter;
+use crate::widgets::{canvas::CanvasState, header::BrushFilter};
 
 use super::Strokes;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub enum Interaction {
+    #[default]
     None,
     Drawing {
         from: Option<Point>,
@@ -25,12 +28,6 @@ pub enum Interaction {
         from: Option<Point>,
         to: Option<Point>,
     },
-}
-
-impl Default for Interaction {
-    fn default() -> Self {
-        Self::None
-    }
 }
 
 pub struct Drawable<'a> {

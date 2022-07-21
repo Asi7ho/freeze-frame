@@ -1,3 +1,7 @@
+mod message;
+mod utils;
+mod widgets;
+
 use iced::{
     executor,
     pure::{
@@ -7,18 +11,18 @@ use iced::{
     window, Color, Command, Length, Settings,
 };
 
+use message::{CanvasMessage, FreezeFrameMessage, HeaderMessage, PropertyMessage};
+
 use widgets::{
-    canvas::{CanvasMessage, CanvasState, Strokes},
-    header::{BrushFilter, ExtraFilter, HeaderMessage, HeaderState},
-    layers::{LayerMessage, LayerState},
-    property::{GeometryForm, PropertyMessage, PropertyState},
+    canvas::CanvasState,
+    header::{BrushFilter, ExtraFilter, HeaderState},
+    layers::LayerState,
+    property::{GeometryForm, PropertyState},
     timeline::TimelineState,
+    tools::drawing::Strokes,
 };
 
 use rand::{distributions::Uniform, prelude::Distribution};
-
-mod utils;
-mod widgets;
 
 // Launch desktop app
 fn main() -> iced::Result {
@@ -42,14 +46,6 @@ pub struct FreezeFrame {
     timeline_state: TimelineState,
     property_state: PropertyState,
     layer_state: LayerState,
-}
-
-#[derive(Debug, Clone)]
-pub enum FreezeFrameMessage {
-    HeaderInteraction(HeaderMessage),
-    CanvasInteraction(CanvasMessage),
-    PropertyInteraction(PropertyMessage),
-    Ignore,
 }
 
 impl Application for FreezeFrame {
@@ -99,15 +95,15 @@ impl Application for FreezeFrame {
     fn update(&mut self, message: FreezeFrameMessage) -> Command<FreezeFrameMessage> {
         match message {
             FreezeFrameMessage::HeaderInteraction(m) => match m {
-                widgets::header::HeaderMessage::SceneTitleChange(scene_title) => {
+                HeaderMessage::SceneTitleChange(scene_title) => {
                     self.header_state.scene_title_input = scene_title;
                 }
-                widgets::header::HeaderMessage::BrushControlsChange(filter) => {
+                HeaderMessage::BrushControlsChange(filter) => {
                     self.header_state.brush_filter = filter;
                     self.canvas_state.brush_filter = filter;
                     self.property_state.filter = filter;
                 }
-                widgets::header::HeaderMessage::GridToolSelected(tool) => {
+                HeaderMessage::GridToolSelected(tool) => {
                     if tool == ExtraFilter::Trash {
                         self.canvas_state = CanvasState {
                             canvas_width: self.canvas_state.canvas_width,
@@ -127,13 +123,13 @@ impl Application for FreezeFrame {
                         }
                     }
                 }
-                widgets::header::HeaderMessage::ChangePalette => (),
-                widgets::header::HeaderMessage::ChangeColor(id_row_col) => {
+                HeaderMessage::ChangePalette => (),
+                HeaderMessage::ChangeColor(id_row_col) => {
                     self.header_state.brush_color_id = id_row_col;
                     self.canvas_state.brush_color =
                         self.header_state.color_palette.colors[id_row_col.0 * 5 + id_row_col.1];
                 }
-                widgets::header::HeaderMessage::AddColor => {
+                HeaderMessage::AddColor => {
                     let step = Uniform::new(0, 256);
                     let mut rng = rand::thread_rng();
                     let red = step.sample(&mut rng) as u8;
@@ -143,7 +139,7 @@ impl Application for FreezeFrame {
                     let color = Color::from_rgb8(red, green, blue);
                     self.header_state.color_palette.colors.push(color);
                 }
-                widgets::header::HeaderMessage::Scrolled(offset) => {
+                HeaderMessage::Scrolled(offset) => {
                     self.header_state.color_scroll_offset = offset;
                 }
             },

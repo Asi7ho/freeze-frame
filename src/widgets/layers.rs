@@ -1,22 +1,19 @@
 use iced::{
     alignment::Horizontal,
     pure::{
-        widget::{container, Column, Container, Text},
+        widget::{Column, Container, Text},
         Element,
     },
     Color, Length,
 };
 
-use crate::FreezeFrameMessage;
+use crate::message::FreezeFrameMessage;
+
+use super::style::{WContainerState, WContainerStyle};
 
 #[derive(Debug, Default)]
 pub struct LayerState {
     pub level: i8,
-}
-
-#[derive(Debug, Clone)]
-pub enum LayerMessage {
-    LayerChanged(usize),
 }
 
 pub fn view(layer_state: &LayerState) -> Element<FreezeFrameMessage> {
@@ -30,21 +27,9 @@ pub fn view(layer_state: &LayerState) -> Element<FreezeFrameMessage> {
         .height(Length::Fill)
         .width(Length::Units(225))
         .padding(10)
-        .style(LayerStyle);
+        .style(WContainerStyle {
+            state: WContainerState::RightBar,
+        });
 
     return container.into();
-}
-
-pub struct LayerStyle;
-
-impl container::StyleSheet for LayerStyle {
-    fn style(&self) -> container::Style {
-        container::Style {
-            text_color: None,
-            background: Some(Color::from_rgb8(25, 25, 25).into()),
-            border_radius: 0.0,
-            border_width: 0.0,
-            ..container::Style::default()
-        }
-    }
 }

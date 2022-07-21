@@ -6,16 +6,11 @@ use iced::{
     Color, Length,
 };
 
-pub use super::tools::drawing::{Drawable, Strokes};
 use super::{
     header::{BrushFilter, ExtraFilter},
     property::GeometryForm,
+    tools::drawing::{Drawable, Strokes},
 };
-
-#[derive(Debug, Clone)]
-pub enum CanvasMessage {
-    AddStrokes(Strokes),
-}
 
 #[derive(Debug, Default)]
 pub struct CanvasState {
