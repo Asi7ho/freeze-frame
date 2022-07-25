@@ -3,11 +3,12 @@ use iced::{
         widget::{canvas, Canvas, Container},
         Element,
     },
-    Color, Length,
+    Length,
 };
 
 use super::{
-    header::{BrushFilter, ExtraFilter},
+    components::BrushComponent,
+    header::ExtraFilter,
     property::GeometryForm,
     tools::drawing::{Drawable, Strokes},
 };
@@ -17,9 +18,7 @@ pub struct CanvasState {
     pub canvas_width: f32,
     pub canvas_height: f32,
     pub cache: canvas::Cache,
-    pub brush_color: Color,
-    pub brush_size: f32,
-    pub brush_filter: BrushFilter,
+    pub brush_component: BrushComponent,
     pub geometry_form: Option<GeometryForm>,
     pub extra_filter: ExtraFilter,
 }
@@ -39,7 +38,7 @@ impl CanvasState {
             .center_x()
             .center_y();
 
-        return container.into();
+        container.into()
     }
 
     pub fn request_redraw(&mut self) {

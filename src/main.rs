@@ -15,6 +15,7 @@ use message::{CanvasMessage, FreezeFrameMessage, HeaderMessage, PropertyMessage}
 
 use widgets::{
     canvas::CanvasState,
+    components::BrushComponent,
     header::{BrushFilter, ExtraFilter, HeaderState},
     layers::LayerState,
     property::{GeometryForm, PropertyState},
@@ -61,8 +62,11 @@ impl Application for FreezeFrame {
         let canvas_state = CanvasState {
             canvas_width: 750.0,
             canvas_height: 435.0,
-            brush_color: header_state.color_palette.colors[0],
-            brush_size: 1.0,
+            brush_component: BrushComponent {
+                size: 1.0,
+                color: header_state.color_palette.colors[0],
+                ..BrushComponent::default()
+            },
             geometry_form: Some(GeometryForm::default()),
             ..CanvasState::default()
         };
@@ -89,50 +93,52 @@ impl Application for FreezeFrame {
     }
 
     fn background_color(&self) -> Color {
-        return Color::from_rgb8(34, 34, 34);
+        Color::from_rgb8(34, 34, 34)
     }
 
     fn update(&mut self, message: FreezeFrameMessage) -> Command<FreezeFrameMessage> {
         match message {
             FreezeFrameMessage::HeaderInteraction(m) => match m {
-                HeaderMessage::SceneTitleChange(scene_title) => {
+                HeaderMessage::ChangeSceneTitle(scene_title) => {
                     self.header_state.scene_title_input = scene_title;
                 }
-                HeaderMessage::BrushControlsChange(filter) => {
+                HeaderMessage::ChangeBrushControls(filter) => {
                     self.header_state.brush_filter = filter;
-                    self.canvas_state.brush_filter = filter;
+                    self.canvas_state.brush_component.brush = filter;
                     self.property_state.filter = filter;
 
                     if self.property_state.filter == BrushFilter::Brush {
-                        self.canvas_state.brush_size = self.property_state.brush_slider_value;
+                        self.canvas_state.brush_component.size =
+                            self.property_state.brush_slider_value;
                     } else if self.property_state.filter == BrushFilter::Eraser {
-                        self.canvas_state.brush_size = self.property_state.eraser_slider_value;
+                        self.canvas_state.brush_component.size =
+                            self.property_state.eraser_slider_value;
                     }
                 }
-                HeaderMessage::GridToolSelected(tool) => {
+                HeaderMessage::SelectGridTool(tool) => {
                     if tool == ExtraFilter::Trash {
                         self.canvas_state = CanvasState {
                             canvas_width: self.canvas_state.canvas_width,
                             canvas_height: self.canvas_state.canvas_height,
-                            brush_color: self.header_state.color_palette.colors[0],
-                            brush_filter: self.header_state.brush_filter,
-                            brush_size: 1.0,
+                            brush_component: BrushComponent {
+                                brush: self.header_state.brush_filter,
+                                size: 1.0,
+                                color: self.header_state.color_palette.colors[0],
+                            },
                             ..CanvasState::default()
                         };
                         self.strokes.clear();
                         self.header_state.extra_filter = ExtraFilter::Ignore;
+                    } else if tool == self.header_state.extra_filter {
+                        self.header_state.extra_filter = ExtraFilter::Ignore;
                     } else {
-                        if tool == self.header_state.extra_filter {
-                            self.header_state.extra_filter = ExtraFilter::Ignore;
-                        } else {
-                            self.header_state.extra_filter = tool;
-                        }
+                        self.header_state.extra_filter = tool;
                     }
                 }
                 HeaderMessage::ChangePalette => (),
                 HeaderMessage::ChangeColor(id_row_col) => {
                     self.header_state.brush_color_id = id_row_col;
-                    self.canvas_state.brush_color =
+                    self.canvas_state.brush_component.color =
                         self.header_state.color_palette.colors[id_row_col.0 * 5 + id_row_col.1];
                 }
                 HeaderMessage::AddColor => {
@@ -145,7 +151,7 @@ impl Application for FreezeFrame {
                     let color = Color::from_rgb8(red, green, blue);
                     self.header_state.color_palette.colors.push(color);
                 }
-                HeaderMessage::Scrolled(offset) => {
+                HeaderMessage::Scroll(offset) => {
                     self.header_state.color_scroll_offset = offset;
                 }
             },
@@ -156,29 +162,29 @@ impl Application for FreezeFrame {
                 }
             },
             FreezeFrameMessage::PropertyInteraction(m) => match m {
-                PropertyMessage::SliderChanged(value) => {
+                PropertyMessage::Slide(value) => {
                     if self.property_state.filter == BrushFilter::Brush {
                         self.property_state.brush_slider_value = value;
                     } else if self.property_state.filter == BrushFilter::Eraser {
                         self.property_state.eraser_slider_value = value;
                     }
-                    self.canvas_state.brush_size = value;
+                    self.canvas_state.brush_component.size = value;
                 }
-                PropertyMessage::ResolutionXChanged(x) => {
+                PropertyMessage::ChangeResolutionX(x) => {
                     let resolution_x = x.parse::<f32>();
-                    if resolution_x.is_ok() {
-                        self.canvas_state.canvas_width = resolution_x.unwrap();
+                    if let Ok(resolution) = resolution_x {
+                        self.canvas_state.canvas_width = resolution;
                         self.property_state.resolution.0 = self.canvas_state.canvas_width;
                     }
                 }
-                PropertyMessage::ResolutionYChanged(y) => {
+                PropertyMessage::ChangeResolutionY(y) => {
                     let resolution_y = y.parse::<f32>();
-                    if resolution_y.is_ok() {
-                        self.canvas_state.canvas_height = resolution_y.unwrap();
+                    if let Ok(resolution) = resolution_y {
+                        self.canvas_state.canvas_height = resolution;
                         self.property_state.resolution.1 = self.canvas_state.canvas_height;
                     }
                 }
-                PropertyMessage::GeometryFormChanged(form) => {
+                PropertyMessage::ChangeGeometryForm(form) => {
                     self.property_state.geometry_form = Some(form);
                     self.canvas_state.geometry_form = self.property_state.geometry_form;
                 }

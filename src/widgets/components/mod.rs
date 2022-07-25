@@ -5,7 +5,18 @@ use iced::{
 
 use crate::message::{FreezeFrameMessage, HeaderMessage};
 
-use super::style::{WButtonState, WButtonStyle};
+use super::{
+    header::BrushFilter,
+    style::{WButtonState, WButtonStyle},
+};
+
+// Brush
+#[derive(Debug, Copy, Clone, Default)]
+pub struct BrushComponent {
+    pub brush: BrushFilter,
+    pub size: f32,
+    pub color: Color,
+}
 
 // Color Palette
 pub struct ColorPalette<'a> {
@@ -23,7 +34,7 @@ impl<'a> ColorPalette<'a> {
                 .enumerate()
                 .map(|(n_row, item)| {
                     Row::with_children(
-                        item.into_iter()
+                        item.iter()
                             .enumerate()
                             .map(|(n_col, color)| {
                                 let mut size = 20;

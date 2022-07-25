@@ -72,7 +72,7 @@ pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
             state: WContainerState::RightBar,
         });
 
-    return container.into();
+    container.into()
 }
 
 fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
@@ -80,13 +80,13 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
     let resolution_y_text = Text::new("Height: ").color(Color::WHITE);
 
     let input_x = TextInput::new(&resolution.0.to_string(), &resolution.0.to_string(), |x| {
-        FreezeFrameMessage::PropertyInteraction(PropertyMessage::ResolutionXChanged(x))
+        FreezeFrameMessage::PropertyInteraction(PropertyMessage::ChangeResolutionX(x))
     })
     .style(WTextInputStyle {
         state: WTextInputState::Properties,
     });
     let input_y = TextInput::new(&resolution.1.to_string(), &resolution.1.to_string(), |y| {
-        FreezeFrameMessage::PropertyInteraction(PropertyMessage::ResolutionYChanged(y))
+        FreezeFrameMessage::PropertyInteraction(PropertyMessage::ChangeResolutionY(y))
     })
     .style(WTextInputStyle {
         state: WTextInputState::Properties,
@@ -103,13 +103,13 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
         .padding(10)
         .width(Length::Units(225));
 
-    return resolution;
+    resolution
 }
 
 fn brush_properties(slider_value: &f32) -> Column<FreezeFrameMessage> {
     let size_text = Text::new("Size: ").color(Color::WHITE);
     let size_slider = Slider::new(1.0..=50.0, *slider_value, |v| {
-        FreezeFrameMessage::PropertyInteraction(PropertyMessage::SliderChanged(v))
+        FreezeFrameMessage::PropertyInteraction(PropertyMessage::Slide(v))
     })
     .style(WSliderStyle {
         state: WSliderState::Properties,
@@ -124,18 +124,20 @@ fn brush_properties(slider_value: &f32) -> Column<FreezeFrameMessage> {
         .push(size)
         .padding(10)
         .width(Length::Units(225));
-    return properties;
+
+    properties
 }
 
 fn geometry_properties(geometry_form: &Option<GeometryForm>) -> Column<FreezeFrameMessage> {
     let form_text = Text::new("Form: ").color(Color::WHITE);
     let form_picklist = PickList::new(&GeometryForm::ALL[..], *geometry_form, |form| {
-        FreezeFrameMessage::PropertyInteraction(PropertyMessage::GeometryFormChanged(form))
+        FreezeFrameMessage::PropertyInteraction(PropertyMessage::ChangeGeometryForm(form))
     });
     let geometry_list = Row::new().push(form_text).push(form_picklist).spacing(15);
     let properties = Column::new()
         .push(geometry_list)
         .padding(10)
         .width(Length::Units(225));
-    return properties;
+
+    properties
 }

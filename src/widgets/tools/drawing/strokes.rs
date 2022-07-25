@@ -1,24 +1,22 @@
 use iced::{
     canvas::{Frame, LineCap, LineJoin, Path, Stroke},
-    Color, Point, Size,
+    Point, Size,
 };
 
-use crate::widgets::{header::BrushFilter, property::GeometryForm};
+use crate::widgets::{components::BrushComponent, header::BrushFilter, property::GeometryForm};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Strokes {
-    pub brush: BrushFilter,
+    pub brush_component: BrushComponent,
     pub from: Option<Point>,
     pub to: Option<Point>,
-    pub color: Color,
-    pub size: f32,
     pub geometry_form: Option<GeometryForm>,
 }
 
 impl Strokes {
     pub fn draw_all(strokes: &[Strokes], frame: &mut Frame) {
         for stroke in strokes {
-            match stroke.brush {
+            match stroke.brush_component.brush {
                 BrushFilter::Brush | BrushFilter::Eraser => {
                     if stroke.from.is_some() && stroke.to.is_some() {
                         let freehand_stroke = Path::line(stroke.from.unwrap(), stroke.to.unwrap());
@@ -27,8 +25,8 @@ impl Strokes {
                             &freehand_stroke,
                             Stroke::default()
                                 .with_line_cap(LineCap::Round)
-                                .with_color(stroke.color)
-                                .with_width(stroke.size),
+                                .with_color(stroke.brush_component.color)
+                                .with_width(stroke.brush_component.size),
                         );
                     }
                 }
@@ -55,8 +53,8 @@ impl Strokes {
                             &geometry_stroke,
                             Stroke::default()
                                 .with_line_join(LineJoin::Round)
-                                .with_color(stroke.color)
-                                .with_width(stroke.size),
+                                .with_color(stroke.brush_component.color)
+                                .with_width(stroke.brush_component.size),
                         );
                     }
                 }

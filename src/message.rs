@@ -16,13 +16,13 @@ pub enum FreezeFrameMessage {
 //  Header
 #[derive(Debug, Clone)]
 pub enum HeaderMessage {
-    SceneTitleChange(String),
-    BrushControlsChange(BrushFilter),
-    GridToolSelected(ExtraFilter),
+    ChangeSceneTitle(String),
+    ChangeBrushControls(BrushFilter),
+    SelectGridTool(ExtraFilter),
     ChangePalette,
     ChangeColor((usize, usize)),
     AddColor,
-    Scrolled(f32),
+    Scroll(f32),
 }
 
 // Canvas
@@ -34,14 +34,14 @@ pub enum CanvasMessage {
 // Layers
 #[derive(Debug, Clone)]
 pub enum LayerMessage {
-    LayerChanged(usize),
+    ChangeLayer(usize),
 }
 
 // Property
 #[derive(Debug, Clone)]
 pub enum PropertyMessage {
-    SliderChanged(f32),
-    ResolutionXChanged(String),
-    ResolutionYChanged(String),
-    GeometryFormChanged(GeometryForm),
+    Slide(f32),
+    ChangeResolutionX(String),
+    ChangeResolutionY(String),
+    ChangeGeometryForm(GeometryForm),
 }

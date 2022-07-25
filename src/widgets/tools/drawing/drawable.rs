@@ -8,7 +8,7 @@ use iced::{
     Color, Point, Rectangle, Size,
 };
 
-use crate::widgets::{canvas::CanvasState, header::BrushFilter};
+use crate::widgets::{canvas::CanvasState, components::BrushComponent, header::BrushFilter};
 
 use super::Strokes;
 
@@ -66,17 +66,17 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                     mouse::Event::ButtonPressed(mouse::Button::Left) => {
                         // Update interaction
                         // This is equivalent to "I'm starting drawing"
-                        if self.state.brush_filter == BrushFilter::Brush {
+                        if self.state.brush_component.brush == BrushFilter::Brush {
                             *interaction = Interaction::Drawing {
                                 from: None,
                                 to: None,
                             };
-                        } else if self.state.brush_filter == BrushFilter::Eraser {
+                        } else if self.state.brush_component.brush == BrushFilter::Eraser {
                             *interaction = Interaction::Erasing {
                                 from: None,
                                 to: None,
                             };
-                        } else if self.state.brush_filter == BrushFilter::Geometry {
+                        } else if self.state.brush_component.brush == BrushFilter::Geometry {
                             *interaction = Interaction::Geometry {
                                 from: None,
                                 to: None,
@@ -133,11 +133,13 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                 to = Some(cursor_position);
 
                                 let message = Some(Strokes {
-                                    brush: BrushFilter::Brush,
+                                    brush_component: BrushComponent {
+                                        brush: BrushFilter::Brush,
+                                        size: self.state.brush_component.size,
+                                        color: self.state.brush_component.color,
+                                    },
                                     from,
                                     to,
-                                    color: self.state.brush_color,
-                                    size: self.state.brush_size,
                                     geometry_form: None,
                                 });
 
@@ -161,11 +163,13 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                 to = Some(cursor_position);
 
                                 let message = Some(Strokes {
-                                    brush: BrushFilter::Eraser,
+                                    brush_component: BrushComponent {
+                                        brush: BrushFilter::Eraser,
+                                        size: self.state.brush_component.size,
+                                        color: Color::WHITE,
+                                    },
                                     from,
                                     to,
-                                    color: Color::WHITE,
-                                    size: self.state.brush_size,
                                     geometry_form: None,
                                 });
 
@@ -187,11 +191,13 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
                                 *to = Some(cursor_position);
 
                                 let message = Some(Strokes {
-                                    brush: BrushFilter::Geometry,
+                                    brush_component: BrushComponent {
+                                        brush: BrushFilter::Geometry,
+                                        size: self.state.brush_component.size,
+                                        color: self.state.brush_component.color,
+                                    },
                                     from: *from,
                                     to: *to,
-                                    color: self.state.brush_color,
-                                    size: self.state.brush_size,
                                     geometry_form: self.state.geometry_form,
                                 });
 

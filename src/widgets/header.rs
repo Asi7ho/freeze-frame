@@ -73,7 +73,7 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
 
     // Scene title
     let scene_title = TextInput::new("Scene Title", &header_state.scene_title_input, |s| {
-        FreezeFrameMessage::HeaderInteraction(HeaderMessage::SceneTitleChange(s))
+        FreezeFrameMessage::HeaderInteraction(HeaderMessage::ChangeSceneTitle(s))
     })
     .style(WTextInputStyle {
         state: WTextInputState::SceneTitle,
@@ -92,7 +92,7 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
 
         Button::new(icon)
             .on_press(FreezeFrameMessage::HeaderInteraction(
-                HeaderMessage::BrushControlsChange(filter),
+                HeaderMessage::ChangeBrushControls(filter),
             ))
             .style(WButtonStyle { state })
             .padding(10)
@@ -161,7 +161,7 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
             ))
             .push(
                 Scrollable::new(color_palette.widget.spacing(8)).on_scroll(move |offset| {
-                    FreezeFrameMessage::HeaderInteraction(HeaderMessage::Scrolled(offset))
+                    FreezeFrameMessage::HeaderInteraction(HeaderMessage::Scroll(offset))
                 }),
             )
             .push(controllers_button(
@@ -182,7 +182,7 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
 
         Button::new(icon)
             .on_press(FreezeFrameMessage::HeaderInteraction(
-                HeaderMessage::GridToolSelected(filter),
+                HeaderMessage::SelectGridTool(filter),
             ))
             .style(WButtonStyle { state })
             .padding(10)
@@ -220,5 +220,5 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
         state: WContainerState::Header,
     });
 
-    return header.into();
+    header.into()
 }

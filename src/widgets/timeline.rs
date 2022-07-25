@@ -21,5 +21,5 @@ pub fn view(_timeline_state: &TimelineState) -> Element<FreezeFrameMessage> {
             state: WContainerState::TimeLine,
         });
 
-    return property.into();
+    property.into()
 }

@@ -31,5 +31,5 @@ pub fn view(layer_state: &LayerState) -> Element<FreezeFrameMessage> {
             state: WContainerState::RightBar,
         });
 
-    return container.into();
+    container.into()
 }
