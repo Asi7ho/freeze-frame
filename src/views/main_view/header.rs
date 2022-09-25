@@ -132,6 +132,11 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
         header_state.color_palette.colors.clone(),
         5,
         header_state.brush_color_id,
+        |m, n| {
+            FreezeFrameMessage::MainViewInteraction(MainViewMessage::HeaderInteraction(
+                HeaderMessage::ChangeColor((m, n)),
+            ))
+        },
     );
 
     let color_tools = Container::new(

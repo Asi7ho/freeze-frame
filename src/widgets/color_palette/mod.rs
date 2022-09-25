@@ -5,7 +5,6 @@ use iced::{
 
 use crate::{
     styles::{ButtonState, ButtonStyle},
-    views::main_view::{HeaderMessage, MainViewMessage},
     FreezeFrameMessage,
 };
 
@@ -15,7 +14,15 @@ pub struct ColorPalette<'a> {
 }
 
 impl<'a> ColorPalette<'a> {
-    pub fn new(colors: Vec<Color>, chunk_size: usize, selected_color_id: (usize, usize)) -> Self {
+    pub fn new<F>(
+        colors: Vec<Color>,
+        chunk_size: usize,
+        selected_color_id: (usize, usize),
+        message: F,
+    ) -> Self
+    where
+        F: 'a + Fn(usize, usize) -> FreezeFrameMessage,
+    {
         let widget = Column::with_children(
             colors
                 .as_slice()
@@ -33,14 +40,8 @@ impl<'a> ColorPalette<'a> {
                                     size = 25;
                                 }
 
-                                let message = FreezeFrameMessage::MainViewInteraction(
-                                    MainViewMessage::HeaderInteraction(HeaderMessage::ChangeColor(
-                                        (n_row, n_col),
-                                    )),
-                                );
-
                                 Button::new("")
-                                    .on_press(message)
+                                    .on_press(message(n_row, n_col))
                                     .height(Length::Units(size))
                                     .width(Length::Units(size))
                                     .style(ButtonStyle {
