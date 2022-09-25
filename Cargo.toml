@@ -7,8 +7,16 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies.iced]
+# https://github.com/iced-rs/iced
 version = "^0.4.2"
 features = ["canvas", "svg", "pure"]
 
+[dependencies.iced_aw]
+# https://github.com/iced-rs/iced
+version = "^0.2"
+default-features = false
+features = ["color_picker", "pure"]
+
 [dependencies.rand]
+# https://github.com/rust-random/rand
 version = "^0.8.5"
