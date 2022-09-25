@@ -18,7 +18,7 @@ use crate::{
     FreezeFrameMessage,
 };
 
-use super::HeaderMessage;
+use super::{HeaderMessage, MainViewMessage};
 
 #[derive(Debug, Clone)]
 pub struct Colors {
@@ -53,7 +53,9 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
 
     // Scene title
     let scene_title = TextInput::new("Scene Title", &header_state.scene_title_input, |s| {
-        FreezeFrameMessage::HeaderInteraction(HeaderMessage::ChangeSceneTitle(s))
+        FreezeFrameMessage::MainViewInteraction(MainViewMessage::HeaderInteraction(
+            HeaderMessage::ChangeSceneTitle(s),
+        ))
     })
     .style(TextInputStyle {
         state: TextInputState::SceneTitle,
@@ -71,8 +73,8 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
         }
 
         Button::new(icon)
-            .on_press(FreezeFrameMessage::HeaderInteraction(
-                HeaderMessage::ChangeBrushControls(filter),
+            .on_press(FreezeFrameMessage::MainViewInteraction(
+                MainViewMessage::HeaderInteraction(HeaderMessage::ChangeBrushControls(filter)),
             ))
             .style(ButtonStyle { state })
             .padding(10)
@@ -137,16 +139,22 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
             .spacing(5)
             .push(controllers_button(
                 BOTTOM_ARROW,
-                FreezeFrameMessage::HeaderInteraction(HeaderMessage::ChangePalette),
+                FreezeFrameMessage::MainViewInteraction(MainViewMessage::HeaderInteraction(
+                    HeaderMessage::ChangePalette,
+                )),
             ))
             .push(
                 Scrollable::new(color_palette.widget.spacing(8)).on_scroll(move |offset| {
-                    FreezeFrameMessage::HeaderInteraction(HeaderMessage::Scroll(offset))
+                    FreezeFrameMessage::MainViewInteraction(MainViewMessage::HeaderInteraction(
+                        HeaderMessage::Scroll(offset),
+                    ))
                 }),
             )
             .push(controllers_button(
                 ADD,
-                FreezeFrameMessage::HeaderInteraction(HeaderMessage::AddColor),
+                FreezeFrameMessage::MainViewInteraction(MainViewMessage::HeaderInteraction(
+                    HeaderMessage::AddColor,
+                )),
             ))
             .width(Length::Units(225))
             .align_items(Alignment::Center),
@@ -161,8 +169,8 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
         }
 
         Button::new(icon)
-            .on_press(FreezeFrameMessage::HeaderInteraction(
-                HeaderMessage::SelectGridTool(filter),
+            .on_press(FreezeFrameMessage::MainViewInteraction(
+                MainViewMessage::HeaderInteraction(HeaderMessage::SelectGridTool(filter)),
             ))
             .style(ButtonStyle { state })
             .padding(10)

@@ -11,7 +11,7 @@ use iced::{
     window, Color, Command, Settings,
 };
 
-use views::main_view::{self, CanvasMessage, HeaderMessage, MainView, PropertyMessage};
+use views::main_view::{self, MainView, MainViewMessage};
 
 // Launch desktop app
 fn main() -> iced::Result {
@@ -34,9 +34,7 @@ pub struct FreezeFrame {
 
 #[derive(Debug, Clone)]
 pub enum FreezeFrameMessage {
-    HeaderInteraction(HeaderMessage),
-    CanvasInteraction(CanvasMessage),
-    PropertyInteraction(PropertyMessage),
+    MainViewInteraction(MainViewMessage),
     Ignore,
 }
 
@@ -64,7 +62,10 @@ impl Application for FreezeFrame {
     }
 
     fn update(&mut self, message: FreezeFrameMessage) -> Command<FreezeFrameMessage> {
-        main_view::update(&mut self.main_view, message);
+        match message {
+            FreezeFrameMessage::MainViewInteraction(m) => main_view::update(&mut self.main_view, m),
+            FreezeFrameMessage::Ignore => (),
+        }
 
         Command::none()
     }

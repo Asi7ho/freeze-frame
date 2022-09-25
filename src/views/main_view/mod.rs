@@ -64,6 +64,13 @@ impl Default for MainView {
     }
 }
 
+#[derive(Debug, Clone)]
+pub enum MainViewMessage {
+    HeaderInteraction(HeaderMessage),
+    CanvasInteraction(CanvasMessage),
+    PropertyInteraction(PropertyMessage),
+}
+
 //  Header
 #[derive(Debug, Clone)]
 pub enum HeaderMessage {
@@ -91,9 +98,9 @@ pub enum PropertyMessage {
     ChangeGeometryForm(GeometryForm),
 }
 
-pub fn update(state: &mut MainView, message: FreezeFrameMessage) {
+pub fn update(state: &mut MainView, message: MainViewMessage) {
     match message {
-        FreezeFrameMessage::HeaderInteraction(m) => match m {
+        MainViewMessage::HeaderInteraction(m) => match m {
             HeaderMessage::ChangeSceneTitle(scene_title) => {
                 state.header_state.scene_title_input = scene_title;
             }
@@ -150,13 +157,13 @@ pub fn update(state: &mut MainView, message: FreezeFrameMessage) {
                 state.header_state.color_scroll_offset = offset;
             }
         },
-        FreezeFrameMessage::CanvasInteraction(m) => match m {
+        MainViewMessage::CanvasInteraction(m) => match m {
             CanvasMessage::AddStrokes(stroke) => {
                 state.strokes.push(stroke);
                 state.canvas_state.request_redraw();
             }
         },
-        FreezeFrameMessage::PropertyInteraction(m) => match m {
+        MainViewMessage::PropertyInteraction(m) => match m {
             PropertyMessage::Slide(value) => {
                 if state.property_state.filter == BrushFilter::Brush {
                     state.property_state.brush_slider_value = value;
@@ -184,16 +191,16 @@ pub fn update(state: &mut MainView, message: FreezeFrameMessage) {
                 state.canvas_state.geometry_form = state.property_state.geometry_form;
             }
         },
-        FreezeFrameMessage::Ignore => (),
     };
 }
 
 pub fn ui(state: &MainView) -> Element<FreezeFrameMessage> {
     let header_view = header::view(&state.header_state);
-    let canvas_view = state
-        .canvas_state
-        .view(&state.strokes)
-        .map(|stroke| FreezeFrameMessage::CanvasInteraction(CanvasMessage::AddStrokes(stroke)));
+    let canvas_view = state.canvas_state.view(&state.strokes).map(|stroke| {
+        FreezeFrameMessage::MainViewInteraction(MainViewMessage::CanvasInteraction(
+            CanvasMessage::AddStrokes(stroke),
+        ))
+    });
     let timeline_view = timeline::view(&state.timeline_state);
     let property_view = property::view(&state.property_state);
 

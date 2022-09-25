@@ -5,7 +5,7 @@ use iced::{
 
 use crate::{
     styles::{ButtonState, ButtonStyle},
-    views::main_view::HeaderMessage,
+    views::main_view::{HeaderMessage, MainViewMessage},
     FreezeFrameMessage,
 };
 
@@ -33,8 +33,10 @@ impl<'a> ColorPalette<'a> {
                                     size = 25;
                                 }
 
-                                let message = FreezeFrameMessage::HeaderInteraction(
-                                    HeaderMessage::ChangeColor((n_row, n_col)),
+                                let message = FreezeFrameMessage::MainViewInteraction(
+                                    MainViewMessage::HeaderInteraction(HeaderMessage::ChangeColor(
+                                        (n_row, n_col),
+                                    )),
                                 );
 
                                 Button::new("")
