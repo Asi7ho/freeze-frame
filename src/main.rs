@@ -34,7 +34,7 @@ pub struct FreezeFrame {
 
 #[derive(Debug, Clone)]
 pub enum FreezeFrameMessage {
-    MainViewInteraction(MainViewMessage),
+    MainView(MainViewMessage),
     Ignore,
 }
 
@@ -47,7 +47,6 @@ impl Application for FreezeFrame {
         (
             Self {
                 main_view: MainView::default(),
-                ..FreezeFrame::default()
             },
             Command::none(),
         )
@@ -63,7 +62,7 @@ impl Application for FreezeFrame {
 
     fn update(&mut self, message: FreezeFrameMessage) -> Command<FreezeFrameMessage> {
         match message {
-            FreezeFrameMessage::MainViewInteraction(m) => main_view::update(&mut self.main_view, m),
+            FreezeFrameMessage::MainView(m) => main_view::update(&mut self.main_view, m),
             FreezeFrameMessage::Ignore => (),
         }
 

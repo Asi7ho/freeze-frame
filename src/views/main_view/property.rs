@@ -56,7 +56,7 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
     let resolution_y_text = Text::new("Height: ").color(Color::WHITE);
 
     let input_x = TextInput::new(&resolution.0.to_string(), &resolution.0.to_string(), |x| {
-        FreezeFrameMessage::MainViewInteraction(MainViewMessage::PropertyInteraction(
+        FreezeFrameMessage::MainView(MainViewMessage::Property(
             PropertyMessage::ChangeResolutionX(x),
         ))
     })
@@ -64,7 +64,7 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
         state: TextInputState::Properties,
     });
     let input_y = TextInput::new(&resolution.1.to_string(), &resolution.1.to_string(), |y| {
-        FreezeFrameMessage::MainViewInteraction(MainViewMessage::PropertyInteraction(
+        FreezeFrameMessage::MainView(MainViewMessage::Property(
             PropertyMessage::ChangeResolutionY(y),
         ))
     })
@@ -89,9 +89,7 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
 fn brush_properties(slider_value: &f32) -> Column<FreezeFrameMessage> {
     let size_text = Text::new("Size: ").color(Color::WHITE);
     let size_slider = Slider::new(1.0..=50.0, *slider_value, |v| {
-        FreezeFrameMessage::MainViewInteraction(MainViewMessage::PropertyInteraction(
-            PropertyMessage::Slide(v),
-        ))
+        FreezeFrameMessage::MainView(MainViewMessage::Property(PropertyMessage::Slide(v)))
     })
     .style(SliderStyle {
         state: SliderState::Properties,
@@ -113,7 +111,7 @@ fn brush_properties(slider_value: &f32) -> Column<FreezeFrameMessage> {
 fn geometry_properties(geometry_form: &Option<GeometryForm>) -> Column<FreezeFrameMessage> {
     let form_text = Text::new("Form: ").color(Color::WHITE);
     let form_picklist = PickList::new(&GeometryForm::ALL[..], *geometry_form, |form| {
-        FreezeFrameMessage::MainViewInteraction(MainViewMessage::PropertyInteraction(
+        FreezeFrameMessage::MainView(MainViewMessage::Property(
             PropertyMessage::ChangeGeometryForm(form),
         ))
     });

@@ -48,15 +48,11 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
         let cursor_position = if let Some(position) = cursor.position_in(&bounds) {
             position
         } else {
-            match event {
-                Event::Mouse(mouse_event) => match mouse_event {
-                    mouse::Event::ButtonReleased(mouse::Button::Left) => {
-                        *interaction = Interaction::None;
-                    }
-                    _ => (),
-                },
-                _ => (),
-            };
+            if let Event::Mouse(mouse_event) = event {
+                if mouse_event == mouse::Event::ButtonReleased(mouse::Button::Left) {
+                    *interaction = Interaction::None;
+                }
+            }
             return (event::Status::Ignored, None);
         };
 

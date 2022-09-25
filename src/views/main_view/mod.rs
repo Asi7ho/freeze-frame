@@ -66,9 +66,9 @@ impl Default for MainView {
 
 #[derive(Debug, Clone)]
 pub enum MainViewMessage {
-    HeaderInteraction(HeaderMessage),
-    CanvasInteraction(CanvasMessage),
-    PropertyInteraction(PropertyMessage),
+    Header(HeaderMessage),
+    Canvas(CanvasMessage),
+    Property(PropertyMessage),
 }
 
 //  Header
@@ -100,7 +100,7 @@ pub enum PropertyMessage {
 
 pub fn update(state: &mut MainView, message: MainViewMessage) {
     match message {
-        MainViewMessage::HeaderInteraction(m) => match m {
+        MainViewMessage::Header(m) => match m {
             HeaderMessage::ChangeSceneTitle(scene_title) => {
                 state.header_state.scene_title_input = scene_title;
             }
@@ -157,13 +157,13 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                 state.header_state.color_scroll_offset = offset;
             }
         },
-        MainViewMessage::CanvasInteraction(m) => match m {
+        MainViewMessage::Canvas(m) => match m {
             CanvasMessage::AddStrokes(stroke) => {
                 state.strokes.push(stroke);
                 state.canvas_state.request_redraw();
             }
         },
-        MainViewMessage::PropertyInteraction(m) => match m {
+        MainViewMessage::Property(m) => match m {
             PropertyMessage::Slide(value) => {
                 if state.property_state.filter == BrushFilter::Brush {
                     state.property_state.brush_slider_value = value;
@@ -197,9 +197,7 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
 pub fn ui(state: &MainView) -> Element<FreezeFrameMessage> {
     let header_view = header::view(&state.header_state);
     let canvas_view = state.canvas_state.view(&state.strokes).map(|stroke| {
-        FreezeFrameMessage::MainViewInteraction(MainViewMessage::CanvasInteraction(
-            CanvasMessage::AddStrokes(stroke),
-        ))
+        FreezeFrameMessage::MainView(MainViewMessage::Canvas(CanvasMessage::AddStrokes(stroke)))
     });
     let timeline_view = timeline::view(&state.timeline_state);
     let property_view = property::view(&state.property_state);
