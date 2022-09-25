@@ -6,11 +6,9 @@ use iced::{
     Length,
 };
 
-use super::{
-    components::BrushComponent,
-    header::ExtraFilter,
-    property::GeometryForm,
-    tools::drawing::{Drawable, Strokes},
+use crate::tools::{
+    drawing::{BrushComponent, Drawable, Strokes},
+    filters::{GeometryForm, UiControlFilter},
 };
 
 #[derive(Debug, Default)]
@@ -20,7 +18,7 @@ pub struct CanvasState {
     pub cache: canvas::Cache,
     pub brush_component: BrushComponent,
     pub geometry_form: Option<GeometryForm>,
-    pub extra_filter: ExtraFilter,
+    pub extra_filter: UiControlFilter,
 }
 
 impl CanvasState {

@@ -8,9 +8,9 @@ use iced::{
     Color, Point, Rectangle, Size,
 };
 
-use crate::widgets::{canvas::CanvasState, components::BrushComponent, header::BrushFilter};
+use crate::{tools::filters::BrushFilter, views::main_view::canvas::CanvasState};
 
-use super::Strokes;
+use super::{BrushComponent, Strokes};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub enum Interaction {

@@ -1,8 +1,2 @@
-pub mod canvas;
-pub mod components;
-pub mod header;
-pub mod layers;
-pub mod property;
-pub mod style;
-pub mod timeline;
-pub mod tools;
+pub mod color_palette;
+pub use color_palette::ColorPalette;

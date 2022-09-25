@@ -6,9 +6,10 @@ use iced::{
     Length,
 };
 
-use crate::message::FreezeFrameMessage;
-
-use super::style::{WContainerState, WContainerStyle};
+use crate::{
+    styles::{ContainerState, ContainerStyle},
+    FreezeFrameMessage,
+};
 
 #[derive(Debug, Default)]
 pub struct TimelineState {}
@@ -17,8 +18,8 @@ pub fn view(_timeline_state: &TimelineState) -> Element<FreezeFrameMessage> {
     let property = Container::new(Column::new())
         .height(Length::Units(125))
         .width(Length::Fill)
-        .style(WContainerStyle {
-            state: WContainerState::TimeLine,
+        .style(ContainerStyle {
+            state: ContainerState::TimeLine,
         });
 
     property.into()

@@ -7,39 +7,15 @@ use iced::{
     Color, Length,
 };
 
-use crate::message::{FreezeFrameMessage, PropertyMessage};
-
-use super::{
-    header::BrushFilter,
-    style::{
-        WContainerState, WContainerStyle, WSliderState, WSliderStyle, WTextInputState,
-        WTextInputStyle,
+use crate::{
+    styles::{
+        ContainerState, ContainerStyle, SliderState, SliderStyle, TextInputState, TextInputStyle,
     },
+    tools::filters::{BrushFilter, GeometryForm},
+    FreezeFrameMessage,
 };
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-pub enum GeometryForm {
-    #[default]
-    Rectangle,
-    Circle,
-}
-
-impl GeometryForm {
-    const ALL: [GeometryForm; 2] = [GeometryForm::Rectangle, GeometryForm::Circle];
-}
-
-impl std::fmt::Display for GeometryForm {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                GeometryForm::Rectangle => "Rectangle",
-                GeometryForm::Circle => "Circle",
-            }
-        )
-    }
-}
+use super::PropertyMessage;
 
 #[derive(Debug, Default)]
 pub struct PropertyState {
@@ -68,8 +44,8 @@ pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
         .height(Length::Fill)
         .width(Length::Units(225))
         .padding(10)
-        .style(WContainerStyle {
-            state: WContainerState::RightBar,
+        .style(ContainerStyle {
+            state: ContainerState::RightBar,
         });
 
     container.into()
@@ -82,14 +58,14 @@ fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
     let input_x = TextInput::new(&resolution.0.to_string(), &resolution.0.to_string(), |x| {
         FreezeFrameMessage::PropertyInteraction(PropertyMessage::ChangeResolutionX(x))
     })
-    .style(WTextInputStyle {
-        state: WTextInputState::Properties,
+    .style(TextInputStyle {
+        state: TextInputState::Properties,
     });
     let input_y = TextInput::new(&resolution.1.to_string(), &resolution.1.to_string(), |y| {
         FreezeFrameMessage::PropertyInteraction(PropertyMessage::ChangeResolutionY(y))
     })
-    .style(WTextInputStyle {
-        state: WTextInputState::Properties,
+    .style(TextInputStyle {
+        state: TextInputState::Properties,
     });
 
     let resolution_x = Row::new().push(resolution_x_text).push(input_x).spacing(15);
@@ -111,8 +87,8 @@ fn brush_properties(slider_value: &f32) -> Column<FreezeFrameMessage> {
     let size_slider = Slider::new(1.0..=50.0, *slider_value, |v| {
         FreezeFrameMessage::PropertyInteraction(PropertyMessage::Slide(v))
     })
-    .style(WSliderStyle {
-        state: WSliderState::Properties,
+    .style(SliderStyle {
+        state: SliderState::Properties,
     });
     let size_ind = Text::new(slider_value.to_string()).color(Color::WHITE);
     let size = Row::new()

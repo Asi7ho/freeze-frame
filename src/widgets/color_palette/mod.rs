@@ -3,20 +3,11 @@ use iced::{
     Color, Length,
 };
 
-use crate::message::{FreezeFrameMessage, HeaderMessage};
-
-use super::{
-    header::BrushFilter,
-    style::{WButtonState, WButtonStyle},
+use crate::{
+    styles::{ButtonState, ButtonStyle},
+    views::main_view::HeaderMessage,
+    FreezeFrameMessage,
 };
-
-// Brush
-#[derive(Debug, Copy, Clone, Default)]
-pub struct BrushComponent {
-    pub brush: BrushFilter,
-    pub size: f32,
-    pub color: Color,
-}
 
 // Color Palette
 pub struct ColorPalette<'a> {
@@ -50,8 +41,8 @@ impl<'a> ColorPalette<'a> {
                                     .on_press(message)
                                     .height(Length::Units(size))
                                     .width(Length::Units(size))
-                                    .style(WButtonStyle {
-                                        state: WButtonState::ColorButton(*color),
+                                    .style(ButtonStyle {
+                                        state: ButtonState::ColorButton(*color),
                                     })
                                     .padding(10)
                                     .into()

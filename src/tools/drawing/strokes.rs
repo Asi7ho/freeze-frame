@@ -3,7 +3,9 @@ use iced::{
     Point, Size,
 };
 
-use crate::widgets::{components::BrushComponent, header::BrushFilter, property::GeometryForm};
+use crate::tools::filters::{BrushFilter, GeometryForm};
+
+use super::BrushComponent;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Strokes {
