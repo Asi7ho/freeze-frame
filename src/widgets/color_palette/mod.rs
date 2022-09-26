@@ -23,6 +23,7 @@ impl<'a> ColorPalette<'a> {
     where
         F: 'a + Fn(usize, usize) -> FreezeFrameMessage,
     {
+        log::info!("Color palette size: {:?}", colors.len());
         let widget = Column::with_children(
             colors
                 .as_slice()

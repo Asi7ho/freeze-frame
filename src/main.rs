@@ -15,6 +15,11 @@ use views::main_view::{self, MainView, MainViewMessage};
 
 // Launch desktop app
 fn main() -> iced::Result {
+    env_logger::Builder::from_env(
+        env_logger::Env::default().default_filter_or("freeze_frame=debug"),
+    )
+    .init();
+
     let settings = Settings {
         window: window::Settings {
             min_size: configs::window::MIN_SIZE,
@@ -44,6 +49,7 @@ impl Application for FreezeFrame {
     type Flags = ();
 
     fn new(_flags: ()) -> (Self, Command<FreezeFrameMessage>) {
+        log::info!("Initialize new Freeze Frame instance");
         (
             Self {
                 main_view: MainView::default(),
@@ -61,6 +67,7 @@ impl Application for FreezeFrame {
     }
 
     fn update(&mut self, message: FreezeFrameMessage) -> Command<FreezeFrameMessage> {
+        log::info!("Received message {:?}", message);
         match message {
             FreezeFrameMessage::MainView(m) => main_view::update(&mut self.main_view, m),
             FreezeFrameMessage::Ignore => (),

@@ -56,6 +56,12 @@ impl<'a> canvas::Program<Strokes> for Drawable<'a> {
             return (event::Status::Ignored, None);
         };
 
+        log::info!("Canvas event {:?}", event);
+        log::info!(
+            "Canvas interaction {:?} with brush {:?}",
+            interaction,
+            self.state.brush_component
+        );
         match event {
             Event::Mouse(mouse_event) => {
                 let message = match mouse_event {

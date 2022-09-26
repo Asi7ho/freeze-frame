@@ -40,6 +40,7 @@ impl CanvasState {
     }
 
     pub fn request_redraw(&mut self) {
+        log::info!("Clear canvas -> Canvas = {:?}", self);
         self.cache.clear()
     }
 }
