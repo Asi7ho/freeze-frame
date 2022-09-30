@@ -151,6 +151,7 @@ pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
                     )))
                 }),
             )
+            .padding(5)
             .push(controllers_button(
                 ADD,
                 FreezeFrameMessage::MainView(MainViewMessage::Header(HeaderMessage::AddColor)),
