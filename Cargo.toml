@@ -24,6 +24,7 @@ version = "^0.8.5"
 [dependencies.log]
 # https://github.com/rust-lang/log
 version = "^0.4.17"
+features = ["release_max_level_off"]
 
 [dependencies.env_logger]
 # https://github.com/env-logger-rs/env_logger
