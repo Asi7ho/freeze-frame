@@ -1,16 +1,14 @@
 use iced::{
     alignment::Horizontal,
     pure::{
-        widget::{Column, Container, PickList, Row, Slider, Text, TextInput},
+        widget::{Column, Container, PickList, Row, Slider, Text},
         Element,
     },
     Color, Length,
 };
 
 use crate::{
-    styles::{
-        ContainerState, ContainerStyle, SliderState, SliderStyle, TextInputState, TextInputStyle,
-    },
+    styles::{ContainerState, ContainerStyle, SliderState, SliderStyle},
     tools::filters::{BrushFilter, GeometryForm},
     FreezeFrameMessage,
 };
@@ -20,7 +18,6 @@ use super::{MainViewMessage, PropertyMessage};
 #[derive(Debug, Default)]
 pub struct PropertyState {
     pub filter: BrushFilter,
-    pub resolution: (f32, f32),
     pub brush_slider_value: f32,
     pub eraser_slider_value: f32,
     pub geometry_form: Option<GeometryForm>,
@@ -33,7 +30,6 @@ pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
         .width(Length::Units(225))
         .horizontal_alignment(Horizontal::Center);
     let properties = match property_state.filter {
-        BrushFilter::Pointer => canvas_properties(&property_state.resolution),
         BrushFilter::Brush => brush_properties(&property_state.brush_slider_value),
         BrushFilter::Eraser => brush_properties(&property_state.eraser_slider_value),
         BrushFilter::Geometry => geometry_properties(&property_state.geometry_form),
@@ -49,41 +45,6 @@ pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
         });
 
     container.into()
-}
-
-fn canvas_properties(resolution: &(f32, f32)) -> Column<FreezeFrameMessage> {
-    let resolution_x_text = Text::new("Width: ").color(Color::WHITE);
-    let resolution_y_text = Text::new("Height: ").color(Color::WHITE);
-
-    let input_x = TextInput::new(&resolution.0.to_string(), &resolution.0.to_string(), |x| {
-        FreezeFrameMessage::MainView(MainViewMessage::Property(
-            PropertyMessage::ChangeResolutionX(x),
-        ))
-    })
-    .style(TextInputStyle {
-        state: TextInputState::Properties,
-    });
-    let input_y = TextInput::new(&resolution.1.to_string(), &resolution.1.to_string(), |y| {
-        FreezeFrameMessage::MainView(MainViewMessage::Property(
-            PropertyMessage::ChangeResolutionY(y),
-        ))
-    })
-    .style(TextInputStyle {
-        state: TextInputState::Properties,
-    });
-
-    let resolution_x = Row::new().push(resolution_x_text).push(input_x).spacing(15);
-
-    let resolution_y = Row::new().push(resolution_y_text).push(input_y).spacing(15);
-
-    let resolution = Column::new()
-        .push(resolution_x)
-        .push(resolution_y)
-        .spacing(10)
-        .padding(10)
-        .width(Length::Units(225));
-
-    resolution
 }
 
 fn brush_properties(slider_value: &f32) -> Column<FreezeFrameMessage> {

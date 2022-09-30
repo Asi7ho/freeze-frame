@@ -41,15 +41,14 @@ impl Default for MainView {
             brush_component: BrushComponent {
                 size: 1.0,
                 color: header_state.color_palette.colors[0],
+                geometry_form: Some(GeometryForm::default()),
                 ..BrushComponent::default()
             },
-            geometry_form: Some(GeometryForm::default()),
             ..canvas::CanvasState::default()
         };
         let property_state = property::PropertyState {
             brush_slider_value: 1.0,
             eraser_slider_value: 1.0,
-            resolution: (canvas_state.canvas_width, canvas_state.canvas_height),
             geometry_form: Some(GeometryForm::default()),
             ..property::PropertyState::default()
         };
@@ -93,8 +92,6 @@ pub enum CanvasMessage {
 #[derive(Debug, Clone)]
 pub enum PropertyMessage {
     Slide(f32),
-    ChangeResolutionX(String),
-    ChangeResolutionY(String),
     ChangeGeometryForm(GeometryForm),
 }
 
@@ -126,6 +123,7 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                             brush: state.header_state.brush_filter,
                             size: 1.0,
                             color: state.header_state.color_palette.colors[0],
+                            geometry_form: None,
                         },
                         ..canvas::CanvasState::default()
                     };
@@ -172,23 +170,9 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                 }
                 state.canvas_state.brush_component.size = value;
             }
-            PropertyMessage::ChangeResolutionX(x) => {
-                let resolution_x = x.parse::<f32>();
-                if let Ok(resolution) = resolution_x {
-                    state.canvas_state.canvas_width = resolution;
-                    state.property_state.resolution.0 = state.canvas_state.canvas_width;
-                }
-            }
-            PropertyMessage::ChangeResolutionY(y) => {
-                let resolution_y = y.parse::<f32>();
-                if let Ok(resolution) = resolution_y {
-                    state.canvas_state.canvas_height = resolution;
-                    state.property_state.resolution.1 = state.canvas_state.canvas_height;
-                }
-            }
             PropertyMessage::ChangeGeometryForm(form) => {
                 state.property_state.geometry_form = Some(form);
-                state.canvas_state.geometry_form = state.property_state.geometry_form;
+                state.canvas_state.brush_component.geometry_form = Some(form);
             }
         },
     };

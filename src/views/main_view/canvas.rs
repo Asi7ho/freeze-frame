@@ -7,8 +7,8 @@ use iced::{
 };
 
 use crate::tools::{
-    drawing::{BrushComponent, Drawable, Strokes},
-    filters::{GeometryForm, UiControlFilter},
+    drawing::{BrushComponent, Painting, Strokes},
+    filters::UiControlFilter,
 };
 
 #[derive(Debug, Default)]
@@ -17,13 +17,12 @@ pub struct CanvasState {
     pub canvas_height: f32,
     pub cache: canvas::Cache,
     pub brush_component: BrushComponent,
-    pub geometry_form: Option<GeometryForm>,
     pub extra_filter: UiControlFilter,
 }
 
 impl CanvasState {
     pub fn view<'a>(&'a self, strokes: &'a [Strokes]) -> Element<'a, Strokes> {
-        let canvas = Canvas::new(Drawable {
+        let canvas = Canvas::new(Painting {
             state: self,
             strokes,
         })
