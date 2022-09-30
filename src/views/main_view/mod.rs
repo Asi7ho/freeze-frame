@@ -40,7 +40,7 @@ impl Default for MainView {
             canvas_height: 435.0,
             brush_component: BrushComponent {
                 size: 1.0,
-                color: header_state.color_palette.colors[0],
+                color: header_state.color_palette[0],
                 geometry_form: Some(GeometryForm::default()),
                 ..BrushComponent::default()
             },
@@ -122,7 +122,7 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                         brush_component: BrushComponent {
                             brush: state.header_state.brush_filter,
                             size: 1.0,
-                            color: state.header_state.color_palette.colors[0],
+                            color: state.header_state.color_palette[0],
                             geometry_form: None,
                         },
                         ..canvas::CanvasState::default()
@@ -139,7 +139,7 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
             HeaderMessage::ChangeColor(id_row_col) => {
                 state.header_state.brush_color_id = id_row_col;
                 state.canvas_state.brush_component.color =
-                    state.header_state.color_palette.colors[id_row_col.0 * 5 + id_row_col.1];
+                    state.header_state.color_palette[id_row_col.0 * 5 + id_row_col.1];
             }
             HeaderMessage::AddColor => {
                 let step = Uniform::new(0, 256);
@@ -149,7 +149,7 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                 let blue = step.sample(&mut rng) as u8;
 
                 let color = Color::from_rgb8(red, green, blue);
-                state.header_state.color_palette.colors.push(color);
+                state.header_state.color_palette.push(color);
             }
             HeaderMessage::Scroll(offset) => {
                 state.header_state.color_scroll_offset = offset;
