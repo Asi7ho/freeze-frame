@@ -36,8 +36,6 @@ impl Default for MainView {
             ..header::HeaderState::default()
         };
         let canvas_state = canvas::CanvasState {
-            canvas_width: 750.0,
-            canvas_height: 435.0,
             brush_component: BrushComponent {
                 size: 1.0,
                 color: header_state.color_palette[0],
@@ -117,14 +115,7 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
             HeaderMessage::SelectGridTool(tool) => {
                 if tool == UiControlFilter::Trash {
                     state.canvas_state = canvas::CanvasState {
-                        canvas_width: state.canvas_state.canvas_width,
-                        canvas_height: state.canvas_state.canvas_height,
-                        brush_component: BrushComponent {
-                            brush: state.header_state.brush_filter,
-                            size: 1.0,
-                            color: state.header_state.color_palette[0],
-                            geometry_form: None,
-                        },
+                        brush_component: state.canvas_state.brush_component,
                         ..canvas::CanvasState::default()
                     };
                     state.strokes.clear();

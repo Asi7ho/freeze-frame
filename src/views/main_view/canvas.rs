@@ -13,11 +13,9 @@ use crate::tools::{
 
 #[derive(Debug, Default)]
 pub struct CanvasState {
-    pub canvas_width: f32,
-    pub canvas_height: f32,
     pub cache: canvas::Cache,
     pub brush_component: BrushComponent,
-    pub extra_filter: UiControlFilter,
+    pub ui_control_filter: UiControlFilter,
 }
 
 impl CanvasState {
@@ -26,8 +24,8 @@ impl CanvasState {
             state: self,
             strokes,
         })
-        .width(Length::Units(self.canvas_width as u16))
-        .height(Length::Units(self.canvas_height as u16));
+        .width(Length::Units(750.0 as u16))
+        .height(Length::Units(435.0 as u16));
 
         let container = Container::new(canvas)
             .height(Length::Fill)

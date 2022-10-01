@@ -101,14 +101,11 @@ impl<'a> canvas::Program<Strokes> for Painting<'a> {
 
         // Foreground canvas
         let mut frame = Frame::new(bounds.size());
-        let top_left = Point {
-            x: frame.center().x - self.state.canvas_width / 2.0,
-            y: frame.center().y - self.state.canvas_height / 2.0,
-        };
-        let size = Size {
-            width: self.state.canvas_width,
-            height: self.state.canvas_height,
-        };
+        let top_left = Point::new(
+            frame.center().x - 750.0 / 2.0,
+            frame.center().y - 435.0 / 2.0,
+        );
+        let size = Size::new(750.0, 435.0);
         let foreground_canvas = Path::rectangle(top_left, size);
         frame.fill(&foreground_canvas, Color::WHITE);
         contents.push(frame.into_geometry());
