@@ -53,9 +53,9 @@ impl Application for FreezeFrame {
                 theme: Theme::custom(theme::Palette {
                     background: Color::from_rgb8(34, 34, 34),
                     text: Color::WHITE,
-                    primary: Color::from_rgb(0.5, 0.5, 0.0),
-                    success: Color::from_rgb(0.0, 1.0, 0.0),
-                    danger: Color::from_rgb(1.0, 0.0, 0.0),
+                    primary: Color::from_rgba8(187, 182, 197, 0.15),
+                    success: Color::from_rgba8(187, 182, 197, 0.15),
+                    danger: Color::from_rgba8(187, 182, 197, 0.15),
                 }),
                 main_view: MainView::default(),
             },
