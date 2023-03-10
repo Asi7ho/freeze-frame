@@ -8,14 +8,14 @@ edition = "2021"
 
 [dependencies.iced]
 # https://github.com/iced-rs/iced
-version = "^0.4.2"
-features = ["canvas", "svg", "pure"]
+version = "^0.8.0"
+features = ["canvas", "svg"]
 
 [dependencies.iced_aw]
 # https://github.com/iced-rs/iced
-version = "^0.2"
+version = "^0.4.1"
 default-features = false
-features = ["color_picker", "pure"]
+features = ["color_picker"]
 
 [dependencies.rand]
 # https://github.com/rust-random/rand
@@ -28,7 +28,7 @@ features = ["release_max_level_off"]
 
 [dependencies.env_logger]
 # https://github.com/env-logger-rs/env_logger
-version = "^0.9.1"
+version = "^0.10.0"
 
 
 [profile.release]

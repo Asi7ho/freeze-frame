@@ -1,12 +1,10 @@
 use iced::{
-    pure::widget::{Button, Column, Row},
+    theme,
+    widget::{Button, Column, Row},
     Color, Length,
 };
 
-use crate::{
-    styles::{ButtonState, ButtonStyle},
-    FreezeFrameMessage,
-};
+use crate::{styles::ColorButtonStyle, FreezeFrameMessage};
 
 // Color Palette
 pub struct ColorPalette<'a> {
@@ -36,18 +34,18 @@ impl<'a> ColorPalette<'a> {
                         item.iter()
                             .enumerate()
                             .map(|(n_col, color)| {
-                                let mut size = 20;
+                                let mut size = 20.0;
                                 if (n_row, n_col) == selected_color_id {
-                                    size = 25;
+                                    size = 25.0;
                                 }
 
                                 Button::new("")
                                     .on_press(message(n_row, n_col))
-                                    .height(Length::Units(size))
-                                    .width(Length::Units(size))
-                                    .style(ButtonStyle {
-                                        state: ButtonState::ColorButton(*color),
-                                    })
+                                    .height(Length::Fixed(size))
+                                    .width(Length::Fixed(size))
+                                    .style(theme::Button::Custom(Box::new(ColorButtonStyle {
+                                        color: *color,
+                                    })))
                                     .padding(10)
                                     .into()
                             })

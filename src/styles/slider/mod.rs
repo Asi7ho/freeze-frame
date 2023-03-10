@@ -1,42 +1,30 @@
 use iced::{
-    pure::widget::slider::{self, Handle, HandleShape},
-    Color,
+    widget::slider::{self, Handle, HandleShape},
+    Theme,
 };
 
-// Slider Style
-#[derive(Clone, Copy)]
-pub struct SliderStyle {
-    pub state: SliderState,
-}
-
-#[derive(Clone, Copy)]
-pub enum SliderState {
-    Properties,
-}
+pub struct SliderStyle;
 
 impl slider::StyleSheet for SliderStyle {
-    fn active(&self) -> slider::Style {
-        match self.state {
-            SliderState::Properties => slider::Style {
-                rail_colors: (
-                    Color::from_rgb8(187, 182, 197),
-                    Color::from_rgb8(187, 182, 197),
-                ),
-                handle: Handle {
-                    shape: HandleShape::Circle { radius: 8.0 },
-                    color: Color::from_rgb8(187, 182, 197),
-                    border_width: 0.0,
-                    border_color: Color::TRANSPARENT,
-                },
+    type Style = Theme;
+
+    fn active(&self, _style: &Self::Style) -> slider::Appearance {
+        slider::Appearance {
+            rail_colors: super::RAILS,
+            handle: Handle {
+                shape: HandleShape::Circle { radius: 8.0 },
+                color: super::HANDLE,
+                border_width: 0.0,
+                border_color: super::TRANSPARENT,
             },
         }
     }
 
-    fn hovered(&self) -> slider::Style {
-        self.active()
+    fn hovered(&self, style: &Self::Style) -> slider::Appearance {
+        self.active(style)
     }
 
-    fn dragging(&self) -> slider::Style {
-        self.active()
+    fn dragging(&self, style: &Self::Style) -> slider::Appearance {
+        self.active(style)
     }
 }

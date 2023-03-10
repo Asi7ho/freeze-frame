@@ -1,11 +1,11 @@
 use iced::{
     mouse,
-    pure::widget::canvas::{
+    widget::canvas::{
         self,
         event::{self, Event},
         Cursor, Frame, Path,
     },
-    Color, Point, Rectangle, Size,
+    Color, Point, Rectangle, Size, Theme,
 };
 
 use crate::{tools::filters::BrushFilter, views::main_view::canvas::CanvasState};
@@ -94,6 +94,7 @@ impl<'a> canvas::Program<Strokes> for Painting<'a> {
     fn draw(
         &self,
         _interaction: &Interaction,
+        _theme: &Theme,
         bounds: iced::Rectangle,
         _cursor: canvas::Cursor,
     ) -> Vec<canvas::Geometry> {

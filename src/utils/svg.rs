@@ -1,4 +1,4 @@
-pub const ICON_SIZE: u16 = 16;
+pub const ICON_SIZE: f32 = 16.0;
 
 // Header SVG
 pub const POINTER: &[u8] = include_bytes!("../../assets/pointer.svg");

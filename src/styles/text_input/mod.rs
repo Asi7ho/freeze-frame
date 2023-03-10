@@ -1,41 +1,36 @@
-use iced::{pure::widget::text_input, Color};
+use iced::{widget::text_input, Color, Theme};
 
-// // Text Input Style
-#[derive(Clone, Copy)]
-pub struct TextInputStyle {
-    pub state: TextInputState,
-}
+pub struct SceneTitleStyle;
 
-#[derive(Clone, Copy)]
-pub enum TextInputState {
-    SceneTitle,
-}
+impl text_input::StyleSheet for SceneTitleStyle {
+    type Style = Theme;
 
-impl text_input::StyleSheet for TextInputStyle {
-    fn active(&self) -> text_input::Style {
-        match self.state {
-            TextInputState::SceneTitle => text_input::Style {
-                background: Color::from_rgb8(34, 34, 34).into(),
-                border_radius: 0.0,
-                border_width: 0.0,
-                border_color: Color::TRANSPARENT,
-            },
+    fn active(&self, _style: &Self::Style) -> text_input::Appearance {
+        text_input::Appearance {
+            background: super::BACKGROUND.into(),
+            border_radius: 0.0,
+            border_width: 0.0,
+            border_color: super::TRANSPARENT,
         }
     }
 
-    fn focused(&self) -> text_input::Style {
-        self.active()
+    fn focused(&self, style: &Self::Style) -> text_input::Appearance {
+        self.active(style)
     }
 
-    fn placeholder_color(&self) -> iced::Color {
+    fn hovered(&self, style: &Self::Style) -> text_input::Appearance {
+        self.focused(style)
+    }
+
+    fn placeholder_color(&self, _style: &Self::Style) -> iced::Color {
         Color::from_rgba(1.0, 1.0, 1.0, 0.3)
     }
 
-    fn value_color(&self) -> iced::Color {
-        Color::WHITE
+    fn value_color(&self, _style: &Self::Style) -> iced::Color {
+        super::TEXT_COLOR
     }
 
-    fn selection_color(&self) -> iced::Color {
-        Color::from_rgb8(64, 64, 64)
+    fn selection_color(&self, _style: &Self::Style) -> iced::Color {
+        super::SELECTION
     }
 }

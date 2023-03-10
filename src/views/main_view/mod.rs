@@ -1,9 +1,6 @@
 use iced::{
-    pure::{
-        widget::{Column, Container, Row},
-        Element,
-    },
-    Color, Length,
+    widget::{scrollable, Column, Container, Row},
+    Color, Element, Length,
 };
 
 use rand::{distributions::Uniform, prelude::Distribution};
@@ -77,7 +74,7 @@ pub enum HeaderMessage {
     ChangePalette,
     ChangeColor((usize, usize)),
     AddColor,
-    Scroll(f32),
+    Scroll(scrollable::RelativeOffset),
 }
 
 // Canvas

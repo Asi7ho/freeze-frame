@@ -1,5 +1,5 @@
 use iced::{
-    canvas::{Frame, LineCap, LineJoin, Path, Stroke},
+    widget::canvas::{Frame, LineCap, LineJoin, Path, Stroke},
     Point, Size,
 };
 

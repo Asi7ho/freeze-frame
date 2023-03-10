@@ -1,32 +1,36 @@
-use iced::{pure::widget::container, Color};
+use iced::{widget::container, Theme};
 
-// Container Style
-#[derive(Clone, Copy)]
-pub struct ContainerStyle {
-    pub state: ContainerState,
+pub struct HeaderStyle;
+
+impl container::StyleSheet for HeaderStyle {
+    type Style = Theme;
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
+        container::Appearance {
+            text_color: Some(super::TEXT_COLOR),
+            ..container::Appearance::default()
+        }
+    }
 }
 
-#[derive(Clone, Copy)]
-pub enum ContainerState {
-    Header,
-    RightBar,
-    TimeLine,
+pub struct RightBarStyle;
+
+impl container::StyleSheet for RightBarStyle {
+    type Style = Theme;
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
+        container::Appearance {
+            background: Some(super::DARK_BACKGROUND.into()),
+            ..container::Appearance::default()
+        }
+    }
 }
 
-impl container::StyleSheet for ContainerStyle {
-    fn style(&self) -> container::Style {
-        match self.state {
-            ContainerState::Header => container::Style {
-                text_color: Some(Color::WHITE),
-                ..container::Style::default()
-            },
-            ContainerState::RightBar => container::Style {
-                background: Some(Color::from_rgb8(25, 25, 25).into()),
-                ..container::Style::default()
-            },
-            ContainerState::TimeLine => container::Style {
-                ..container::Style::default()
-            },
+pub struct TimeLineStyle;
+
+impl container::StyleSheet for TimeLineStyle {
+    type Style = Theme;
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
+        container::Appearance {
+            ..container::Appearance::default()
         }
     }
 }

@@ -5,11 +5,7 @@ mod utils;
 mod views;
 mod widgets;
 
-use iced::{
-    executor,
-    pure::{Application, Element},
-    window, Color, Command, Settings,
-};
+use iced::{executor, theme, window, Application, Color, Command, Element, Settings, Theme};
 
 use views::main_view::{self, MainView, MainViewMessage};
 
@@ -34,6 +30,7 @@ fn main() -> iced::Result {
 
 #[derive(Default)]
 pub struct FreezeFrame {
+    theme: Theme,
     main_view: MainView,
 }
 
@@ -46,12 +43,20 @@ pub enum FreezeFrameMessage {
 impl Application for FreezeFrame {
     type Executor = executor::Default;
     type Message = FreezeFrameMessage;
+    type Theme = Theme;
     type Flags = ();
 
     fn new(_flags: ()) -> (Self, Command<FreezeFrameMessage>) {
         log::info!("Initialize new Freeze Frame instance");
         (
             Self {
+                theme: Theme::custom(theme::Palette {
+                    background: Color::from_rgb8(34, 34, 34),
+                    text: Color::WHITE,
+                    primary: Color::from_rgb(0.5, 0.5, 0.0),
+                    success: Color::from_rgb(0.0, 1.0, 0.0),
+                    danger: Color::from_rgb(1.0, 0.0, 0.0),
+                }),
                 main_view: MainView::default(),
             },
             Command::none(),
@@ -62,8 +67,8 @@ impl Application for FreezeFrame {
         String::from("Freeze Frame")
     }
 
-    fn background_color(&self) -> Color {
-        Color::from_rgb8(34, 34, 34)
+    fn theme(&self) -> Self::Theme {
+        self.theme.clone()
     }
 
     fn update(&mut self, message: FreezeFrameMessage) -> Command<FreezeFrameMessage> {

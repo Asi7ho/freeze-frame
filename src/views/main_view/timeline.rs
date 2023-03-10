@@ -1,26 +1,19 @@
 use iced::{
-    pure::{
-        widget::{Column, Container},
-        Element,
-    },
-    Length,
+    theme,
+    widget::{Column, Container},
+    Element, Length,
 };
 
-use crate::{
-    styles::{ContainerState, ContainerStyle},
-    FreezeFrameMessage,
-};
+use crate::{styles::TimeLineStyle, FreezeFrameMessage};
 
 #[derive(Debug, Default)]
 pub struct TimelineState {}
 
 pub fn view(_timeline_state: &TimelineState) -> Element<FreezeFrameMessage> {
     let property = Container::new(Column::new())
-        .height(Length::Units(125))
+        .height(Length::Fixed(125.0))
         .width(Length::Fill)
-        .style(ContainerStyle {
-            state: ContainerState::TimeLine,
-        });
+        .style(theme::Container::Custom(Box::new(TimeLineStyle)));
 
     property.into()
 }

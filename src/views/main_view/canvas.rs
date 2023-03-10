@@ -1,9 +1,6 @@
 use iced::{
-    pure::{
-        widget::{canvas, Canvas, Container},
-        Element,
-    },
-    Length,
+    widget::{canvas, Canvas, Container},
+    Element, Length,
 };
 
 use crate::tools::{
@@ -24,8 +21,8 @@ impl CanvasState {
             state: self,
             strokes,
         })
-        .width(Length::Units(750.0 as u16))
-        .height(Length::Units(435.0 as u16));
+        .width(Length::Fixed(750.0))
+        .height(Length::Fixed(435.0));
 
         let container = Container::new(canvas)
             .height(Length::Fill)
