@@ -5,7 +5,7 @@ mod utils;
 mod views;
 mod widgets;
 
-use iced::{executor, theme, window, Application, Color, Command, Element, Settings, Theme};
+use iced::{executor, window, Application, Command, Element, Settings, Theme};
 
 use views::main_view::{self, MainView, MainViewMessage};
 
@@ -50,13 +50,7 @@ impl Application for FreezeFrame {
         log::info!("Initialize new Freeze Frame instance");
         (
             Self {
-                theme: Theme::custom(theme::Palette {
-                    background: Color::from_rgb8(34, 34, 34),
-                    text: Color::WHITE,
-                    primary: Color::from_rgba8(187, 182, 197, 0.15),
-                    success: Color::from_rgba8(187, 182, 197, 0.15),
-                    danger: Color::from_rgba8(187, 182, 197, 0.15),
-                }),
+                theme: Theme::custom(styles::DEFAULT_PALETTE),
                 main_view: MainView::default(),
             },
             Command::none(),

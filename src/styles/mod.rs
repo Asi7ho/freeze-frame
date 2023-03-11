@@ -1,4 +1,4 @@
-use iced::Color;
+use iced::{theme, Color};
 
 pub mod button;
 pub mod panel;
@@ -29,8 +29,16 @@ macro_rules! color {
     };
 }
 
-// General colors
+// Default background
+pub const DEFAULT_PALETTE: theme::Palette = theme::Palette {
+    background: BACKGROUND,
+    text: TEXT_COLOR,
+    primary: BUTTON_BACKGROUND,
+    success: BUTTON_BACKGROUND,
+    danger: BUTTON_BACKGROUND,
+};
 
+// General colors
 const TEXT_COLOR: Color = Color::WHITE;
 // const SVG: Color = color!(187, 182, 193);
 const BACKGROUND: Color = color!(34, 34, 34);
