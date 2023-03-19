@@ -48,7 +48,7 @@ const SELECTION: Color = color!(64, 64, 64);
 
 // Button colors
 const BUTTON_BACKGROUND: Color = color!(187, 182, 197, 0.15);
-const BUTTON_BORDER: Color = color!(187, 182, 197, 0.35);
+// const BUTTON_BORDER: Color = color!(187, 182, 197, 0.35);
 const BORDER_RADIUS: f32 = 10.0;
 
 // Rails colors

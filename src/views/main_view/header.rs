@@ -7,8 +7,11 @@ use iced::{
 use crate::{
     styles::{HeaderStyle, IconStyle, SceneTitleStyle},
     tools::filters::{BrushFilter, UiControlFilter},
-    utils::svg::{
-        ADD, BOTTOM_ARROW, BRUSH, ERASER, FILL, GEOMETRY, GRID, ICON_SIZE, POINTER, TEXT, TRASH,
+    utils::{
+        colors,
+        svg::{
+            ADD, BOTTOM_ARROW, BRUSH, ERASER, FILL, GEOMETRY, GRID, ICON_SIZE, POINTER, TEXT, TRASH,
+        },
     },
     widgets::ColorPalette,
     FreezeFrameMessage,
@@ -20,7 +23,7 @@ use super::{HeaderMessage, MainViewMessage};
 pub struct HeaderState {
     pub scene_title_input: String,
     pub brush_filter: BrushFilter,
-    pub brush_color_id: (usize, usize),
+    pub brush_color_id: usize,
     pub color_palette: Vec<Color>,
     pub color_scroll_offset: scrollable::RelativeOffset,
     pub ui_control_filter: UiControlFilter,
@@ -31,8 +34,14 @@ impl Default for HeaderState {
         Self {
             scene_title_input: String::default(),
             brush_filter: BrushFilter::default(),
-            brush_color_id: (0, 0),
-            color_palette: vec![Color::BLACK],
+            brush_color_id: 0,
+            color_palette: vec![
+                Color::BLACK,
+                colors::generate_color(),
+                colors::generate_color(),
+                colors::generate_color(),
+                colors::generate_color(),
+            ],
             color_scroll_offset: scrollable::RelativeOffset::START,
             ui_control_filter: UiControlFilter::default(),
         }
@@ -117,13 +126,11 @@ fn create_brush_tools(header_state: &HeaderState) -> Container<FreezeFrameMessag
 }
 
 fn create_color_palette(header_state: &HeaderState) -> ColorPalette {
-    let message = |m, n| {
-        FreezeFrameMessage::MainView(MainViewMessage::Header(HeaderMessage::ChangeColor((m, n))))
-    };
+    let message =
+        |n| FreezeFrameMessage::MainView(MainViewMessage::Header(HeaderMessage::ChangeColor(n)));
 
     ColorPalette::new(
         header_state.color_palette.clone(),
-        5,
         header_state.brush_color_id,
         message,
     )
@@ -153,7 +160,11 @@ fn create_color_tools(header_state: &HeaderState) -> Container<FreezeFrameMessag
         Row::new()
             .spacing(5)
             .push(button(BOTTOM_ARROW, arrow_message))
-            .push(Scrollable::new(color_palette.widget.spacing(8)).on_scroll(scroll_message))
+            .push(
+                Scrollable::new(color_palette.widget.spacing(8).padding(5))
+                    .horizontal_scroll(scrollable::Properties::new().width(1).scroller_width(1))
+                    .on_scroll(scroll_message),
+            )
             .padding(5)
             .push(button(ADD, add_message))
             .width(Length::Fixed(225.0))

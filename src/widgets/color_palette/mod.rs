@@ -1,6 +1,6 @@
 use iced::{
     theme,
-    widget::{Button, Column, Row},
+    widget::{Button, Row},
     Color, Length,
 };
 
@@ -8,54 +8,39 @@ use crate::{styles::ColorButtonStyle, FreezeFrameMessage};
 
 // Color Palette
 pub struct ColorPalette<'a> {
-    pub widget: Column<'a, FreezeFrameMessage>,
+    pub widget: Row<'a, FreezeFrameMessage>,
 }
 
 impl<'a> ColorPalette<'a> {
-    pub fn new<F>(
-        colors: Vec<Color>,
-        chunk_size: usize,
-        selected_color_id: (usize, usize),
-        message: F,
-    ) -> Self
+    pub fn new<F>(colors: Vec<Color>, selected_color_id: usize, message: F) -> Self
     where
-        F: 'a + Fn(usize, usize) -> FreezeFrameMessage,
+        F: 'a + Fn(usize) -> FreezeFrameMessage,
     {
         log::info!("Color palette size: {:?}", colors.len());
-        let widget = Column::with_children(
+
+        let widget = Row::with_children(
             colors
-                .as_slice()
-                .chunks(chunk_size)
-                .collect::<Vec<_>>()
                 .into_iter()
                 .enumerate()
-                .map(|(n_row, item)| {
-                    Row::with_children(
-                        item.iter()
-                            .enumerate()
-                            .map(|(n_col, color)| {
-                                let mut size = 20.0;
-                                if (n_row, n_col) == selected_color_id {
-                                    size = 25.0;
-                                }
+                .map(|(n, color)| {
+                    let mut size = 20.0;
+                    if n == selected_color_id {
+                        size = 25.0;
+                    }
 
-                                Button::new("")
-                                    .on_press(message(n_row, n_col))
-                                    .height(Length::Fixed(size))
-                                    .width(Length::Fixed(size))
-                                    .style(theme::Button::Custom(Box::new(ColorButtonStyle {
-                                        color: *color,
-                                    })))
-                                    .padding(10)
-                                    .into()
-                            })
-                            .collect(),
-                    )
-                    .spacing(5)
-                    .into()
+                    Button::new("")
+                        .on_press(message(n))
+                        .height(Length::Fixed(size))
+                        .width(Length::Fixed(size))
+                        .style(theme::Button::Custom(Box::new(ColorButtonStyle { color })))
+                        .padding(10)
+                        .into()
                 })
                 .collect(),
-        );
+        )
+        .spacing(5)
+        .width(Length::Fill)
+        .into();
 
         Self { widget }
     }

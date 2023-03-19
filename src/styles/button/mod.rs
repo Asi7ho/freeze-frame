@@ -33,8 +33,6 @@ impl button::StyleSheet for ColorButtonStyle {
         button::Appearance {
             background: Some(iced::Background::Color(self.color)),
             border_radius: 8.0,
-            border_width: 2.5,
-            border_color: super::BUTTON_BORDER,
             ..button::Appearance::default()
         }
     }

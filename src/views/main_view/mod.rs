@@ -1,15 +1,14 @@
 use iced::{
     widget::{scrollable, Column, Container, Row},
-    Color, Element, Length,
+    Element, Length,
 };
-
-use rand::{distributions::Uniform, prelude::Distribution};
 
 use crate::{
     tools::{
         drawing::{BrushComponent, Strokes},
         filters::{BrushFilter, GeometryForm, UiControlFilter},
     },
+    utils::colors,
     FreezeFrameMessage,
 };
 
@@ -72,7 +71,7 @@ pub enum HeaderMessage {
     ChangeBrushControls(BrushFilter),
     SelectGridTool(UiControlFilter),
     ChangePalette,
-    ChangeColor((usize, usize)),
+    ChangeColor(usize),
     AddColor,
     Scroll(scrollable::RelativeOffset),
 }
@@ -124,19 +123,12 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                 }
             }
             HeaderMessage::ChangePalette => (),
-            HeaderMessage::ChangeColor(id_row_col) => {
-                state.header_state.brush_color_id = id_row_col;
-                state.canvas_state.brush_component.color =
-                    state.header_state.color_palette[id_row_col.0 * 5 + id_row_col.1];
+            HeaderMessage::ChangeColor(n) => {
+                state.header_state.brush_color_id = n;
+                state.canvas_state.brush_component.color = state.header_state.color_palette[n];
             }
             HeaderMessage::AddColor => {
-                let step = Uniform::new(0, 256);
-                let mut rng = rand::thread_rng();
-                let red = step.sample(&mut rng) as u8;
-                let green = step.sample(&mut rng) as u8;
-                let blue = step.sample(&mut rng) as u8;
-
-                let color = Color::from_rgb8(red, green, blue);
+                let color = colors::generate_color();
                 state.header_state.color_palette.push(color);
             }
             HeaderMessage::Scroll(offset) => {
