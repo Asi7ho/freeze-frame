@@ -1,4 +1,4 @@
-use iced::{widget::container, Theme};
+use iced::{widget::container, Color, Theme};
 
 pub struct HeaderStyle;
 
@@ -6,7 +6,7 @@ impl container::StyleSheet for HeaderStyle {
     type Style = Theme;
     fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
-            text_color: Some(super::TEXT_COLOR),
+            text_color: Some(Color::WHITE),
             ..container::Appearance::default()
         }
     }
@@ -18,7 +18,7 @@ impl container::StyleSheet for RightBarStyle {
     type Style = Theme;
     fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
-            background: Some(super::DARK_BACKGROUND.into()),
+            background: Some(Color::from_rgb8(25, 25, 25).into()),
             ..container::Appearance::default()
         }
     }

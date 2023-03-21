@@ -1,6 +1,6 @@
 use iced::{
     widget::slider::{self, Handle, HandleShape},
-    Theme,
+    Color, Theme,
 };
 
 pub struct SliderStyle;
@@ -10,12 +10,15 @@ impl slider::StyleSheet for SliderStyle {
 
     fn active(&self, _style: &Self::Style) -> slider::Appearance {
         slider::Appearance {
-            rail_colors: super::RAILS,
+            rail_colors: (
+                Color::from_rgb8(187, 182, 197),
+                Color::from_rgb8(187, 182, 197),
+            ),
             handle: Handle {
                 shape: HandleShape::Circle { radius: 8.0 },
-                color: super::HANDLE,
+                color: Color::from_rgb8(187, 182, 197),
                 border_width: 0.0,
-                border_color: super::TRANSPARENT,
+                border_color: Color::TRANSPARENT,
             },
         }
     }

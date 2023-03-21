@@ -7,10 +7,10 @@ impl text_input::StyleSheet for SceneTitleStyle {
 
     fn active(&self, _style: &Self::Style) -> text_input::Appearance {
         text_input::Appearance {
-            background: super::BACKGROUND.into(),
+            background: Color::from_rgb8(34, 34, 34).into(),
             border_radius: 0.0,
             border_width: 0.0,
-            border_color: super::TRANSPARENT,
+            border_color: Color::TRANSPARENT,
         }
     }
 
@@ -23,14 +23,14 @@ impl text_input::StyleSheet for SceneTitleStyle {
     }
 
     fn placeholder_color(&self, _style: &Self::Style) -> iced::Color {
-        Color::from_rgba(1.0, 1.0, 1.0, 0.3)
+        Color::from_rgba8(255, 255, 255, 0.3)
     }
 
     fn value_color(&self, _style: &Self::Style) -> iced::Color {
-        super::TEXT_COLOR
+        Color::WHITE
     }
 
     fn selection_color(&self, _style: &Self::Style) -> iced::Color {
-        super::SELECTION
+        Color::from_rgb8(64, 64, 64)
     }
 }

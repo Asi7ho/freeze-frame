@@ -89,14 +89,13 @@ fn create_icon(icon_byte: &'static [u8]) -> Svg<iced::Renderer> {
 fn create_brush_tools(header_state: &HeaderState) -> Container<FreezeFrameMessage> {
     let button = |icon_byte, filter, current_filter| {
         let icon = create_icon(icon_byte);
+        let selected = filter == current_filter;
 
         Button::new(icon)
             .on_press(FreezeFrameMessage::MainView(MainViewMessage::Header(
                 HeaderMessage::ChangeBrushControls(filter),
             )))
-            .style(theme::Button::Custom(Box::new(IconStyle {
-                selected: filter == current_filter,
-            })))
+            .style(theme::Button::Custom(Box::new(IconStyle { selected })))
             .padding(10)
     };
 

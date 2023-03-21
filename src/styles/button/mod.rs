@@ -9,14 +9,14 @@ impl button::StyleSheet for IconStyle {
 
     fn active(&self, _style: &Self::Style) -> button::Appearance {
         let color = if self.selected {
-            super::BUTTON_BACKGROUND
+            Color::from_rgb8(25, 25, 25)
         } else {
-            super::TRANSPARENT
+            Color::TRANSPARENT
         };
 
         button::Appearance {
             background: Some(color.into()),
-            border_radius: super::BORDER_RADIUS,
+            border_radius: 10.0,
             ..button::Appearance::default()
         }
     }
@@ -31,7 +31,7 @@ impl button::StyleSheet for ColorButtonStyle {
 
     fn active(&self, _style: &Self::Style) -> button::Appearance {
         button::Appearance {
-            background: Some(iced::Background::Color(self.color)),
+            background: Some(self.color.into()),
             border_radius: 8.0,
             ..button::Appearance::default()
         }
