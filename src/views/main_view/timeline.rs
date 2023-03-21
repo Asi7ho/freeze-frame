@@ -1,6 +1,6 @@
 use iced::{
     theme,
-    widget::{Column, Container},
+    widget::{column, container},
     Element, Length,
 };
 
@@ -10,10 +10,11 @@ use crate::{styles::TimeLineStyle, FreezeFrameMessage};
 pub struct TimelineState {}
 
 pub fn view(_timeline_state: &TimelineState) -> Element<FreezeFrameMessage> {
-    let property = Container::new(Column::new())
+    let content = column![];
+
+    container(content)
         .height(Length::Fixed(125.0))
         .width(Length::Fill)
-        .style(theme::Container::Custom(Box::new(TimeLineStyle)));
-
-    property.into()
+        .style(theme::Container::Custom(Box::new(TimeLineStyle)))
+        .into()
 }

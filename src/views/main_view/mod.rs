@@ -1,5 +1,5 @@
 use iced::{
-    widget::{scrollable, Column, Container, Row},
+    widget::{column, container, row, scrollable},
     Element, Length,
 };
 
@@ -166,13 +166,10 @@ pub fn ui(state: &MainView) -> Element<FreezeFrameMessage> {
     let timeline_view = timeline::view(&state.timeline_state);
     let property_view = property::view(&state.property_state);
 
-    let main_view = Column::new()
-        .push(header_view)
-        .push(canvas_view)
-        .push(timeline_view)
+    let main_view = column![header_view, canvas_view, timeline_view]
         .height(Length::Fill)
         .width(Length::Fill);
-    let right_bar_view = Column::new().push(property_view);
+    let right_bar_view = column![property_view];
 
-    return Container::new(Row::new().push(main_view).push(right_bar_view)).into();
+    return container(row![main_view, right_bar_view]).into();
 }

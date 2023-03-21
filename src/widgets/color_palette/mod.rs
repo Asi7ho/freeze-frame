@@ -1,6 +1,6 @@
 use iced::{
     theme,
-    widget::{Button, Row},
+    widget::{button, Row},
     Color, Length,
 };
 
@@ -18,29 +18,29 @@ impl<'a> ColorPalette<'a> {
     {
         log::info!("Color palette size: {:?}", colors.len());
 
-        let widget = Row::with_children(
-            colors
-                .into_iter()
-                .enumerate()
-                .map(|(n, color)| {
-                    let mut size = 20.0;
-                    if n == selected_color_id {
-                        size = 25.0;
-                    }
+        let palette = colors
+            .into_iter()
+            .enumerate()
+            .map(|(n, color)| {
+                let mut size = 20.0;
+                if n == selected_color_id {
+                    size = 25.0;
+                }
 
-                    Button::new("")
-                        .on_press(message(n))
-                        .height(Length::Fixed(size))
-                        .width(Length::Fixed(size))
-                        .style(theme::Button::Custom(Box::new(ColorButtonStyle { color })))
-                        .padding(10)
-                        .into()
-                })
-                .collect(),
-        )
-        .spacing(5)
-        .width(Length::Fill)
-        .into();
+                button("")
+                    .on_press(message(n))
+                    .height(Length::Fixed(size))
+                    .width(Length::Fixed(size))
+                    .style(theme::Button::Custom(Box::new(ColorButtonStyle { color })))
+                    .padding(10)
+                    .into()
+            })
+            .collect();
+
+        let widget = Row::with_children(palette)
+            .spacing(5)
+            .width(Length::Fill)
+            .into();
 
         Self { widget }
     }

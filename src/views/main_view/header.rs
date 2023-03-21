@@ -1,6 +1,6 @@
 use iced::{
     theme,
-    widget::{scrollable, svg, Button, Container, Row, Scrollable, Svg, TextInput},
+    widget::{button, container, row, scrollable, svg, text_input, Svg},
     Alignment, Color, Element, Length,
 };
 
@@ -49,79 +49,71 @@ impl Default for HeaderState {
 }
 
 pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
-    let header = Container::new(
-        Row::new()
-            .spacing(50)
-            .push(create_scene_tile(header_state))
-            .push(create_brush_tools(header_state))
-            .push(create_color_tools(header_state))
-            .push(create_ui_control_tool(header_state))
-            .align_items(Alignment::Center),
-    )
-    .height(Length::Fixed(45.0))
-    .width(Length::Fill)
-    .style(theme::Container::Custom(Box::new(HeaderStyle)));
+    let content = row![
+        create_scene_tile(header_state),
+        create_brush_tools(header_state),
+        create_color_tools(header_state),
+        create_ui_control_tool(header_state)
+    ]
+    .spacing(50)
+    .align_items(Alignment::Center);
 
-    header.into()
+    container(content)
+        .height(Length::Fixed(45.0))
+        .width(Length::Fill)
+        .style(theme::Container::Custom(Box::new(HeaderStyle)))
+        .into()
 }
 
-fn create_scene_tile(header_state: &HeaderState) -> TextInput<FreezeFrameMessage> {
+fn create_scene_tile(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
     let scene_title = &header_state.scene_title_input;
     let message = |s| {
         FreezeFrameMessage::MainView(MainViewMessage::Header(HeaderMessage::ChangeSceneTitle(s)))
     };
 
-    TextInput::new("Scene Title", scene_title, message)
+    text_input("Scene Title", scene_title, message)
         .style(theme::TextInput::Custom(Box::new(SceneTitleStyle)))
         .size(26)
         .padding(10)
         .width(Length::Fixed(250.0))
+        .into()
 }
 
 fn create_icon(icon_byte: &'static [u8]) -> Svg<iced::Renderer> {
     let handle = svg::Handle::from_memory(icon_byte);
 
-    Svg::new(handle)
+    svg(handle)
         .height(Length::Fixed(ICON_SIZE))
         .width(Length::Fixed(ICON_SIZE))
 }
 
-fn create_brush_tools(header_state: &HeaderState) -> Container<FreezeFrameMessage> {
+fn create_brush_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
     let button = |icon_byte, filter, current_filter| {
         let icon = create_icon(icon_byte);
         let selected = filter == current_filter;
+        let message = |f| {
+            FreezeFrameMessage::MainView(MainViewMessage::Header(
+                HeaderMessage::ChangeBrushControls(f),
+            ))
+        };
 
-        Button::new(icon)
-            .on_press(FreezeFrameMessage::MainView(MainViewMessage::Header(
-                HeaderMessage::ChangeBrushControls(filter),
-            )))
+        button(icon)
+            .on_press(message(filter))
             .style(theme::Button::Custom(Box::new(IconStyle { selected })))
             .padding(10)
     };
 
-    Container::new(
-        Row::new()
-            .spacing(5)
-            .push(button(
-                POINTER,
-                BrushFilter::Pointer,
-                header_state.brush_filter,
-            ))
-            .push(button(BRUSH, BrushFilter::Brush, header_state.brush_filter))
-            .push(button(
-                ERASER,
-                BrushFilter::Eraser,
-                header_state.brush_filter,
-            ))
-            .push(button(
-                GEOMETRY,
-                BrushFilter::Geometry,
-                header_state.brush_filter,
-            ))
-            .push(button(TEXT, BrushFilter::Text, header_state.brush_filter))
-            .push(button(FILL, BrushFilter::Fill, header_state.brush_filter))
-            .align_items(Alignment::Center),
-    )
+    let content = row![
+        button(POINTER, BrushFilter::Pointer, header_state.brush_filter,),
+        button(BRUSH, BrushFilter::Brush, header_state.brush_filter),
+        button(ERASER, BrushFilter::Eraser, header_state.brush_filter),
+        button(GEOMETRY, BrushFilter::Geometry, header_state.brush_filter),
+        button(TEXT, BrushFilter::Text, header_state.brush_filter),
+        button(FILL, BrushFilter::Fill, header_state.brush_filter)
+    ]
+    .align_items(Alignment::Center);
+
+    container(content).into()
 }
 
 fn create_color_palette(header_state: &HeaderState) -> ColorPalette {
@@ -135,11 +127,11 @@ fn create_color_palette(header_state: &HeaderState) -> ColorPalette {
     )
 }
 
-fn create_color_tools(header_state: &HeaderState) -> Container<FreezeFrameMessage> {
-    let button = |icon_byte, message| {
+fn create_color_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
+    let get_buttton = |icon_byte, message| {
         let icon = create_icon(icon_byte);
 
-        Button::new(icon)
+        button(icon)
             .on_press(message)
             .style(theme::Button::Custom(Box::new(IconStyle {
                 selected: false,
@@ -155,31 +147,30 @@ fn create_color_tools(header_state: &HeaderState) -> Container<FreezeFrameMessag
     let add_message =
         FreezeFrameMessage::MainView(MainViewMessage::Header(HeaderMessage::AddColor));
 
-    Container::new(
-        Row::new()
-            .spacing(5)
-            .push(button(BOTTOM_ARROW, arrow_message))
-            .push(
-                Scrollable::new(color_palette.widget.spacing(8).padding(5))
-                    .horizontal_scroll(scrollable::Properties::new().width(1).scroller_width(1))
-                    .on_scroll(scroll_message),
-            )
-            .padding(5)
-            .push(button(ADD, add_message))
-            .width(Length::Fixed(225.0))
-            .align_items(Alignment::Center),
-    )
+    let content = row![
+        get_buttton(BOTTOM_ARROW, arrow_message),
+        scrollable(color_palette.widget.spacing(8).padding(5))
+            .horizontal_scroll(scrollable::Properties::new().width(1).scroller_width(1))
+            .on_scroll(scroll_message),
+        get_buttton(ADD, add_message)
+    ]
+    .spacing(5)
+    .padding(5)
+    .width(Length::Fixed(225.0))
+    .align_items(Alignment::Center);
+
+    container(content).into()
 }
 
-fn create_ui_control_tool(header_state: &HeaderState) -> Container<FreezeFrameMessage> {
-    let button = |icon_byte, filter, current_filter| {
+fn create_ui_control_tool(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
+    let get_button = |icon_byte, filter, current_filter| {
         let icon = create_icon(icon_byte);
 
         let message = FreezeFrameMessage::MainView(MainViewMessage::Header(
             HeaderMessage::SelectGridTool(filter),
         ));
 
-        Button::new(icon)
+        button(icon)
             .on_press(message)
             .style(theme::Button::Custom(Box::new(IconStyle {
                 selected: filter == current_filter,
@@ -187,19 +178,15 @@ fn create_ui_control_tool(header_state: &HeaderState) -> Container<FreezeFrameMe
             .padding(10)
     };
 
-    Container::new(
-        Row::new()
-            .spacing(5)
-            .push(button(
-                GRID,
-                UiControlFilter::Grid,
-                header_state.ui_control_filter,
-            ))
-            .push(button(
-                TRASH,
-                UiControlFilter::Trash,
-                header_state.ui_control_filter,
-            ))
-            .align_items(Alignment::Center),
-    )
+    let content = row![
+        get_button(GRID, UiControlFilter::Grid, header_state.ui_control_filter,),
+        get_button(
+            TRASH,
+            UiControlFilter::Trash,
+            header_state.ui_control_filter,
+        )
+    ]
+    .align_items(Alignment::Center);
+
+    container(content).into()
 }
