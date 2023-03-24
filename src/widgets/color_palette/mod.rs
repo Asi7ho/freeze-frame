@@ -1,3 +1,9 @@
+/// `ColorPalette` is a `Row` of `Button`s that each have a `ColorButtonStyle` and a
+/// `FreezeFrameMessage` callback.
+///
+/// Properties:
+///
+/// * `widget`: The widget that will be rendered.
 use iced::{
     theme,
     widget::{button, Row},
@@ -16,15 +22,13 @@ impl<'a> ColorPalette<'a> {
     where
         F: 'a + Fn(usize) -> FreezeFrameMessage,
     {
-        log::info!("Color palette size: {:?}", colors.len());
-
         let palette = colors
             .into_iter()
             .enumerate()
             .map(|(n, color)| {
                 let mut size = 20.0;
                 if n == selected_color_id {
-                    size = 25.0;
+                    std::mem::swap(&mut size, &mut 25.0)
                 }
 
                 button("")

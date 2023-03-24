@@ -138,46 +138,35 @@ impl<'a> canvas::Program<Strokes> for Painting<'a> {
 }
 
 fn update_interaction(interaction: &mut Interaction, brush_component: BrushComponent) {
-    if brush_component.brush == BrushFilter::Brush {
-        *interaction = Interaction::Drawing {
+    *interaction = match brush_component.brush {
+        BrushFilter::Brush => Interaction::Drawing {
             line: Line::default(),
-        };
-    } else if brush_component.brush == BrushFilter::Eraser {
-        *interaction = Interaction::Erasing {
+        },
+        BrushFilter::Eraser => Interaction::Erasing {
             line: Line::default(),
-        };
-    } else if brush_component.brush == BrushFilter::Geometry {
-        *interaction = Interaction::Geometry {
+        },
+        BrushFilter::Geometry => Interaction::Geometry {
             line: Line::default(),
-        };
-    } else {
-        *interaction = Interaction::None;
-    }
+        },
+        _ => Interaction::None,
+    };
 }
 
 fn start_drawing(interaction: &mut Interaction, cursor_position: Point) -> Option<Strokes> {
-    match interaction {
+    *interaction = match interaction {
         // Drawing with a freehand brush
-        Interaction::Drawing { line: _ } => {
-            *interaction = Interaction::Drawing {
-                line: Line::new(Some(cursor_position), None),
-            };
-        }
-
+        Interaction::Drawing { .. } => Interaction::Drawing {
+            line: Line::new(Some(cursor_position), None),
+        },
         // Erasing with a freehand brush
-        Interaction::Erasing { line: _ } => {
-            *interaction = Interaction::Erasing {
-                line: Line::new(Some(cursor_position), None),
-            };
-        }
-
+        Interaction::Erasing { .. } => Interaction::Erasing {
+            line: Line::new(Some(cursor_position), None),
+        },
         // Drawing a geometry form
-        Interaction::Geometry { line: _ } => {
-            *interaction = Interaction::Geometry {
-                line: Line::new(Some(cursor_position), None),
-            };
-        }
-        _ => (),
+        Interaction::Geometry { .. } => Interaction::Geometry {
+            line: Line::new(Some(cursor_position), None),
+        },
+        _ => return None,
     };
 
     None

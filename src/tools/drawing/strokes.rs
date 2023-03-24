@@ -41,43 +41,41 @@ pub fn draw_all(strokes: &[Strokes], frame: &mut Frame) {
 
 fn draw_freehand(stroke: &Strokes, frame: &mut Frame) {
     if stroke.line.is_line() {
-        let from = stroke.line.from.unwrap();
-        let to = stroke.line.to.unwrap();
-
-        frame.stroke(
-            &Path::line(from, to),
-            Stroke::default()
-                .with_line_cap(LineCap::Round)
-                .with_color(stroke.brush_component.color)
-                .with_width(stroke.brush_component.size),
-        );
+        if let (Some(from), Some(to)) = (stroke.line.from, stroke.line.to) {
+            frame.stroke(
+                &Path::line(from, to),
+                Stroke::default()
+                    .with_line_cap(LineCap::Round)
+                    .with_color(stroke.brush_component.color)
+                    .with_width(stroke.brush_component.size),
+            );
+        }
     }
 }
 
 fn draw_geometry(stroke: &Strokes, frame: &mut Frame) {
     if stroke.line.is_line() {
-        let from = stroke.line.from.unwrap();
-        let to = stroke.line.to.unwrap();
+        if let (Some(from), Some(to)) = (stroke.line.from, stroke.line.to) {
+            if let Some(geometry) = stroke.brush_component.geometry_form {
+                let geometry_stroke = match geometry {
+                    GeometryForm::Rectangle => {
+                        let size = Size::new(to.x - from.x, to.y - from.y);
+                        Path::rectangle(from, size)
+                    }
+                    GeometryForm::Circle => {
+                        let radius = to.distance(from);
+                        Path::circle(from, radius)
+                    }
+                };
 
-        if let Some(geometry) = stroke.brush_component.geometry_form {
-            let geometry_stroke = match geometry {
-                GeometryForm::Rectangle => {
-                    let size = Size::new(to.x - from.x, to.y - from.y);
-                    Path::rectangle(from, size)
-                }
-                GeometryForm::Circle => {
-                    let radius = to.distance(from);
-                    Path::circle(from, radius)
-                }
-            };
-
-            frame.stroke(
-                &geometry_stroke,
-                Stroke::default()
-                    .with_line_join(LineJoin::Round)
-                    .with_color(stroke.brush_component.color)
-                    .with_width(stroke.brush_component.size),
-            );
+                frame.stroke(
+                    &geometry_stroke,
+                    Stroke::default()
+                        .with_line_join(LineJoin::Round)
+                        .with_color(stroke.brush_component.color)
+                        .with_width(stroke.brush_component.size),
+                );
+            }
         }
     }
 }

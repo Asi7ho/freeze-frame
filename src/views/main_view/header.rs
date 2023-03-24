@@ -89,7 +89,9 @@ fn create_icon(icon_byte: &'static [u8]) -> Svg<iced::Renderer> {
 }
 
 fn create_brush_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
-    let create_brush_button = |icon_byte, filter, current_filter| {
+    let current_filter = header_state.brush_filter;
+
+    let create_brush_button = |icon_byte, filter| {
         let icon = create_icon(icon_byte);
         let selected = filter == current_filter;
         let message = |f| _message(HeaderMessage::ChangeBrushControls(f));
@@ -101,12 +103,12 @@ fn create_brush_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage>
     };
 
     let content = row![
-        create_brush_button(POINTER, BrushFilter::Pointer, header_state.brush_filter,),
-        create_brush_button(BRUSH, BrushFilter::Brush, header_state.brush_filter),
-        create_brush_button(ERASER, BrushFilter::Eraser, header_state.brush_filter),
-        create_brush_button(GEOMETRY, BrushFilter::Geometry, header_state.brush_filter),
-        create_brush_button(TEXT, BrushFilter::Text, header_state.brush_filter),
-        create_brush_button(FILL, BrushFilter::Fill, header_state.brush_filter)
+        create_brush_button(POINTER, BrushFilter::Pointer),
+        create_brush_button(BRUSH, BrushFilter::Brush),
+        create_brush_button(ERASER, BrushFilter::Eraser),
+        create_brush_button(GEOMETRY, BrushFilter::Geometry),
+        create_brush_button(TEXT, BrushFilter::Text),
+        create_brush_button(FILL, BrushFilter::Fill)
     ]
     .align_items(Alignment::Center);
 
@@ -153,7 +155,9 @@ fn create_color_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage>
 }
 
 fn create_ui_control_tool(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
-    let create_ui_button = |icon_byte, filter, current_filter| {
+    let current_filter = header_state.ui_control_filter;
+
+    let create_ui_button = |icon_byte, filter| {
         let icon = create_icon(icon_byte);
         let message = _message(HeaderMessage::SelectGridTool(filter));
 
@@ -166,12 +170,8 @@ fn create_ui_control_tool(header_state: &HeaderState) -> Element<FreezeFrameMess
     };
 
     let content = row![
-        create_ui_button(GRID, UiControlFilter::Grid, header_state.ui_control_filter),
-        create_ui_button(
-            TRASH,
-            UiControlFilter::Trash,
-            header_state.ui_control_filter
-        )
+        create_ui_button(GRID, UiControlFilter::Grid),
+        create_ui_button(TRASH, UiControlFilter::Trash)
     ]
     .align_items(Alignment::Center);
 

@@ -100,10 +100,10 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                 state.canvas_state.brush_component.brush = filter;
                 state.property_state.filter = filter;
 
-                if state.property_state.filter == BrushFilter::Brush {
+                if filter == BrushFilter::Brush {
                     state.canvas_state.brush_component.size =
                         state.property_state.brush_slider_value;
-                } else if state.property_state.filter == BrushFilter::Eraser {
+                } else if filter == BrushFilter::Eraser {
                     state.canvas_state.brush_component.size =
                         state.property_state.eraser_slider_value;
                 }
@@ -128,8 +128,10 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                 state.canvas_state.brush_component.color = state.header_state.color_palette[n];
             }
             HeaderMessage::AddColor => {
-                let color = colors::generate_color();
-                state.header_state.color_palette.push(color);
+                state
+                    .header_state
+                    .color_palette
+                    .push(colors::generate_color());
             }
             HeaderMessage::Scroll(offset) => {
                 state.header_state.color_scroll_offset = offset;
