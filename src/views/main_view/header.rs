@@ -70,14 +70,15 @@ fn _message(message: HeaderMessage) -> FreezeFrameMessage {
 }
 
 fn create_scene_tile(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
-    text_input("Scene Title", &header_state.scene_title_input, |s| {
-        _message(HeaderMessage::ChangeSceneTitle(s))
-    })
-    .style(theme::TextInput::Custom(Box::new(SceneTitleStyle)))
-    .size(26)
-    .padding(10)
-    .width(Length::Fixed(250.0))
-    .into()
+    Element::from(
+        text_input("Scene Title", &header_state.scene_title_input, |s| {
+            _message(HeaderMessage::ChangeSceneTitle(s))
+        })
+        .style(theme::TextInput::Custom(Box::new(SceneTitleStyle)))
+        .size(26)
+        .padding(10)
+        .width(Length::Fixed(250.0)),
+    )
 }
 
 fn create_icon(icon_byte: &'static [u8]) -> Svg<iced::Renderer> {
@@ -112,7 +113,7 @@ fn create_brush_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage>
     ]
     .align_items(Alignment::Center);
 
-    container(content).into()
+    Element::from(container(content))
 }
 
 fn create_color_palette(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
@@ -151,7 +152,7 @@ fn create_color_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage>
     .width(Length::Fixed(225.0))
     .align_items(Alignment::Center);
 
-    container(content).into()
+    Element::from(container(content))
 }
 
 fn create_ui_control_tool(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
@@ -175,5 +176,5 @@ fn create_ui_control_tool(header_state: &HeaderState) -> Element<FreezeFrameMess
     ]
     .align_items(Alignment::Center);
 
-    container(content).into()
+    Element::from(container(content))
 }

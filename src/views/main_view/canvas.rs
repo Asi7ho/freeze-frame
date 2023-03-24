@@ -24,12 +24,13 @@ impl CanvasState {
         .width(Length::Fixed(750.0))
         .height(Length::Fixed(435.0));
 
-        container(canvas)
-            .height(Length::Fill)
-            .width(Length::Fill)
-            .center_x()
-            .center_y()
-            .into()
+        Element::from(
+            container(canvas)
+                .height(Length::Fill)
+                .width(Length::Fill)
+                .center_x()
+                .center_y(),
+        )
     }
 
     pub fn request_redraw(&mut self) {

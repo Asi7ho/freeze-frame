@@ -12,9 +12,10 @@ pub struct TimelineState {}
 pub fn view(_timeline_state: &TimelineState) -> Element<FreezeFrameMessage> {
     let content = column![];
 
-    container(content)
-        .height(Length::Fixed(125.0))
-        .width(Length::Fill)
-        .style(theme::Container::Custom(Box::new(TimeLineStyle)))
-        .into()
+    Element::from(
+        container(content)
+            .height(Length::Fixed(125.0))
+            .width(Length::Fill)
+            .style(theme::Container::Custom(Box::new(TimeLineStyle))),
+    )
 }

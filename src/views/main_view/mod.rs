@@ -173,5 +173,5 @@ pub fn ui(state: &MainView) -> Element<FreezeFrameMessage> {
         .width(Length::Fill);
     let right_bar_view = column![property_view];
 
-    return container(row![main_view, right_bar_view]).into();
+    Element::from(container(row![main_view, right_bar_view]))
 }
