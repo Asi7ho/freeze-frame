@@ -87,39 +87,42 @@ pub enum CanvasMessage {
 pub enum PropertyMessage {
     Slide(f32),
     ChangeGeometryForm(GeometryForm),
+    ChangeDialogInput(String),
+    ChangeActionInput(String),
+    ChangeNoteInput(String),
 }
 
 pub fn update(state: &mut MainView, message: MainViewMessage) {
     match message {
         MainViewMessage::Header(m) => match m {
-            HeaderMessage::ChangeSceneTitle(scene_title) => {
-                state.header_state.scene_title_input = scene_title;
+            HeaderMessage::ChangeSceneTitle(s) => {
+                state.header_state.scene_title_input = s;
             }
-            HeaderMessage::ChangeBrushControls(filter) => {
-                state.header_state.brush_filter = filter;
-                state.canvas_state.brush_component.brush = filter;
-                state.property_state.filter = filter;
+            HeaderMessage::ChangeBrushControls(f) => {
+                state.header_state.brush_filter = f;
+                state.canvas_state.brush_component.brush = f;
+                state.property_state.filter = f;
 
-                if filter == BrushFilter::Brush {
+                if f == BrushFilter::Brush {
                     state.canvas_state.brush_component.size =
                         state.property_state.brush_slider_value;
-                } else if filter == BrushFilter::Eraser {
+                } else if f == BrushFilter::Eraser {
                     state.canvas_state.brush_component.size =
                         state.property_state.eraser_slider_value;
                 }
             }
-            HeaderMessage::SelectGridTool(tool) => {
-                if tool == UiControlFilter::Trash {
+            HeaderMessage::SelectGridTool(t) => {
+                if t == UiControlFilter::Trash {
                     state.canvas_state = canvas::CanvasState {
                         brush_component: state.canvas_state.brush_component,
                         ..canvas::CanvasState::default()
                     };
                     state.strokes.clear();
                     state.header_state.ui_control_filter = UiControlFilter::Ignore;
-                } else if tool == state.header_state.ui_control_filter {
+                } else if t == state.header_state.ui_control_filter {
                     state.header_state.ui_control_filter = UiControlFilter::Ignore;
                 } else {
-                    state.header_state.ui_control_filter = tool;
+                    state.header_state.ui_control_filter = t;
                 }
             }
             HeaderMessage::ChangePalette => (),
@@ -144,18 +147,21 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
             }
         },
         MainViewMessage::Property(m) => match m {
-            PropertyMessage::Slide(value) => {
+            PropertyMessage::Slide(v) => {
                 if state.property_state.filter == BrushFilter::Brush {
-                    state.property_state.brush_slider_value = value;
+                    state.property_state.brush_slider_value = v;
                 } else if state.property_state.filter == BrushFilter::Eraser {
-                    state.property_state.eraser_slider_value = value;
+                    state.property_state.eraser_slider_value = v;
                 }
-                state.canvas_state.brush_component.size = value;
+                state.canvas_state.brush_component.size = v;
             }
-            PropertyMessage::ChangeGeometryForm(form) => {
-                state.property_state.geometry_form = Some(form);
-                state.canvas_state.brush_component.geometry_form = Some(form);
+            PropertyMessage::ChangeGeometryForm(f) => {
+                state.property_state.geometry_form = Some(f);
+                state.canvas_state.brush_component.geometry_form = Some(f);
             }
+            PropertyMessage::ChangeDialogInput(s) => state.property_state.dialog_text = s,
+            PropertyMessage::ChangeActionInput(s) => state.property_state.action_text = s,
+            PropertyMessage::ChangeNoteInput(s) => state.property_state.note_text = s,
         },
     };
 }
