@@ -28,7 +28,7 @@ fn _message(message: PropertyMessage) -> FreezeFrameMessage {
     FreezeFrameMessage::MainView(MainViewMessage::Property(message))
 }
 
-pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
+pub fn view(state: &PropertyState) -> Element<FreezeFrameMessage> {
     let heading = text("Properties")
         .size(22)
         .width(Length::Fixed(225.0))
@@ -36,11 +36,11 @@ pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
 
     let empty_column = column![].into();
 
-    let properties = match property_state.filter {
-        BrushFilter::Pointer => scene_properties(property_state),
-        BrushFilter::Brush => brush_properties(&property_state.brush_slider_value),
-        BrushFilter::Eraser => brush_properties(&property_state.eraser_slider_value),
-        BrushFilter::Geometry => geometry_properties(&property_state.geometry_form),
+    let properties = match state.filter {
+        BrushFilter::Pointer => scene_properties(state),
+        BrushFilter::Brush => brush_properties(&state.brush_slider_value),
+        BrushFilter::Eraser => brush_properties(&state.eraser_slider_value),
+        BrushFilter::Geometry => geometry_properties(&state.geometry_form),
         _ => empty_column,
     };
 
@@ -55,25 +55,23 @@ pub fn view(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
     )
 }
 
-fn scene_properties(property_state: &PropertyState) -> Element<FreezeFrameMessage> {
+fn scene_properties(state: &PropertyState) -> Element<FreezeFrameMessage> {
     let dialog_text = text("Dialog");
-    let dialog_input = text_input("", &&property_state.dialog_text, |s| {
+    let dialog_input = text_input("", &state.dialog_text, |s| {
         _message(PropertyMessage::ChangeDialogInput(s))
-    })
-    .padding(5);
+    });
     let dialog_widget = column![dialog_text, dialog_input].padding(10);
 
     let action_text = text("Action");
-    let action_input = text_input("", &property_state.action_text, |s| {
+    let action_input = text_input("", &state.action_text, |s| {
         _message(PropertyMessage::ChangeActionInput(s))
     });
     let action_widget = column![action_text, action_input].padding(10);
 
     let note_text = text("Note");
-    let note_input = text_input("", &property_state.note_text, |s| {
+    let note_input = text_input("", &state.note_text, |s| {
         _message(PropertyMessage::ChangeNoteInput(s))
-    })
-    .padding(5);
+    });
     let note_widget = column![note_text, note_input].padding(10);
 
     Element::from(column![dialog_widget, action_widget, note_widget])

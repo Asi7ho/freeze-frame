@@ -9,7 +9,7 @@ use crate::{styles::TimeLineStyle, FreezeFrameMessage};
 #[derive(Debug, Default)]
 pub struct TimelineState {}
 
-pub fn view(_timeline_state: &TimelineState) -> Element<FreezeFrameMessage> {
+pub fn view(_state: &TimelineState) -> Element<FreezeFrameMessage> {
     let content = column![];
 
     Element::from(

@@ -48,12 +48,12 @@ impl Default for HeaderState {
     }
 }
 
-pub fn view(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
+pub fn view(state: &HeaderState) -> Element<FreezeFrameMessage> {
     let content = row![
-        create_scene_tile(header_state),
-        create_brush_tools(header_state),
-        create_color_tools(header_state),
-        create_ui_control_tool(header_state)
+        create_scene_tile(state),
+        create_brush_tools(state),
+        create_color_tools(state),
+        create_ui_control_tool(state)
     ]
     .spacing(50)
     .align_items(Alignment::Center);
@@ -69,9 +69,9 @@ fn _message(message: HeaderMessage) -> FreezeFrameMessage {
     FreezeFrameMessage::MainView(MainViewMessage::Header(message))
 }
 
-fn create_scene_tile(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
+fn create_scene_tile(state: &HeaderState) -> Element<FreezeFrameMessage> {
     Element::from(
-        text_input("Scene Title", &header_state.scene_title_input, |s| {
+        text_input("Scene Title", &state.scene_title_input, |s| {
             _message(HeaderMessage::ChangeSceneTitle(s))
         })
         .style(theme::TextInput::Custom(Box::new(SceneTitleStyle)))
@@ -89,8 +89,8 @@ fn create_icon(icon_byte: &'static [u8]) -> Svg<iced::Renderer> {
         .width(Length::Fixed(ICON_SIZE))
 }
 
-fn create_brush_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
-    let current_filter = header_state.brush_filter;
+fn create_brush_tools(state: &HeaderState) -> Element<FreezeFrameMessage> {
+    let current_filter = state.brush_filter;
 
     let create_brush_button = |icon_byte, filter| {
         let icon = create_icon(icon_byte);
@@ -116,19 +116,17 @@ fn create_brush_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage>
     Element::from(container(content))
 }
 
-fn create_color_palette(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
-    ColorPalette::new(
-        header_state.color_palette.clone(),
-        header_state.brush_color_id,
-        |n| _message(HeaderMessage::ChangeColor(n)),
-    )
+fn create_color_palette(state: &HeaderState) -> Element<FreezeFrameMessage> {
+    ColorPalette::new(state.color_palette.clone(), state.brush_color_id, |n| {
+        _message(HeaderMessage::ChangeColor(n))
+    })
     .widget
     .spacing(8)
     .padding(5)
     .into()
 }
 
-fn create_color_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
+fn create_color_tools(state: &HeaderState) -> Element<FreezeFrameMessage> {
     let create_control_button = |icon_byte, message| {
         let icon = create_icon(icon_byte);
 
@@ -142,7 +140,7 @@ fn create_color_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage>
 
     let content = row![
         create_control_button(BOTTOM_ARROW, _message(HeaderMessage::ChangePalette)),
-        scrollable(create_color_palette(header_state))
+        scrollable(create_color_palette(state))
             .horizontal_scroll(scrollable::Properties::new().width(1).scroller_width(1))
             .on_scroll(|s| _message(HeaderMessage::Scroll(s))),
         create_control_button(ADD, _message(HeaderMessage::AddColor))
@@ -155,8 +153,8 @@ fn create_color_tools(header_state: &HeaderState) -> Element<FreezeFrameMessage>
     Element::from(container(content))
 }
 
-fn create_ui_control_tool(header_state: &HeaderState) -> Element<FreezeFrameMessage> {
-    let current_filter = header_state.ui_control_filter;
+fn create_ui_control_tool(state: &HeaderState) -> Element<FreezeFrameMessage> {
+    let current_filter = state.ui_control_filter;
 
     let create_ui_button = |icon_byte, filter| {
         let icon = create_icon(icon_byte);

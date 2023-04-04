@@ -103,12 +103,16 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                 state.canvas_state.brush_component.brush = f;
                 state.property_state.filter = f;
 
-                if f == BrushFilter::Brush {
-                    state.canvas_state.brush_component.size =
-                        state.property_state.brush_slider_value;
-                } else if f == BrushFilter::Eraser {
-                    state.canvas_state.brush_component.size =
-                        state.property_state.eraser_slider_value;
+                match f {
+                    BrushFilter::Brush => {
+                        state.canvas_state.brush_component.size =
+                            state.property_state.brush_slider_value;
+                    }
+                    BrushFilter::Eraser => {
+                        state.canvas_state.brush_component.size =
+                            state.property_state.eraser_slider_value;
+                    }
+                    _ => (),
                 }
             }
             HeaderMessage::SelectGridTool(t) => {
@@ -136,22 +140,22 @@ pub fn update(state: &mut MainView, message: MainViewMessage) {
                     .color_palette
                     .push(colors::generate_color());
             }
-            HeaderMessage::Scroll(offset) => {
-                state.header_state.color_scroll_offset = offset;
+            HeaderMessage::Scroll(o) => {
+                state.header_state.color_scroll_offset = o;
             }
         },
         MainViewMessage::Canvas(m) => match m {
-            CanvasMessage::AddStrokes(stroke) => {
-                state.strokes.push(stroke);
+            CanvasMessage::AddStrokes(s) => {
+                state.strokes.push(s);
                 state.canvas_state.request_redraw();
             }
         },
         MainViewMessage::Property(m) => match m {
             PropertyMessage::Slide(v) => {
-                if state.property_state.filter == BrushFilter::Brush {
-                    state.property_state.brush_slider_value = v;
-                } else if state.property_state.filter == BrushFilter::Eraser {
-                    state.property_state.eraser_slider_value = v;
+                match state.property_state.filter {
+                    BrushFilter::Brush => state.property_state.brush_slider_value = v,
+                    BrushFilter::Eraser => state.property_state.eraser_slider_value = v,
+                    _ => (),
                 }
                 state.canvas_state.brush_component.size = v;
             }
