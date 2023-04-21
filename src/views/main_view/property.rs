@@ -57,21 +57,18 @@ pub fn view(state: &PropertyState) -> Element<FreezeFrameMessage> {
 
 fn scene_properties(state: &PropertyState) -> Element<FreezeFrameMessage> {
     let dialog_text = text("Dialog");
-    let dialog_input = text_input("", &state.dialog_text, |s| {
-        _message(PropertyMessage::ChangeDialogInput(s))
-    });
+    let dialog_input = text_input("", &state.dialog_text)
+        .on_input(|s| _message(PropertyMessage::ChangeDialogInput(s)));
     let dialog_widget = column![dialog_text, dialog_input].padding(10);
 
     let action_text = text("Action");
-    let action_input = text_input("", &state.action_text, |s| {
-        _message(PropertyMessage::ChangeActionInput(s))
-    });
+    let action_input = text_input("", &state.action_text)
+        .on_input(|s| _message(PropertyMessage::ChangeActionInput(s)));
     let action_widget = column![action_text, action_input].padding(10);
 
     let note_text = text("Note");
-    let note_input = text_input("", &state.note_text, |s| {
-        _message(PropertyMessage::ChangeNoteInput(s))
-    });
+    let note_input = text_input("", &state.note_text)
+        .on_input(|s| _message(PropertyMessage::ChangeNoteInput(s)));
     let note_widget = column![note_text, note_input].padding(10);
 
     Element::from(column![dialog_widget, action_widget, note_widget])

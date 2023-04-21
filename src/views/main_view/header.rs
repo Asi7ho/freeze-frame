@@ -71,13 +71,12 @@ fn _message(message: HeaderMessage) -> FreezeFrameMessage {
 
 fn create_scene_tile(state: &HeaderState) -> Element<FreezeFrameMessage> {
     Element::from(
-        text_input("Scene Title", &state.scene_title_input, |s| {
-            _message(HeaderMessage::ChangeSceneTitle(s))
-        })
-        .style(theme::TextInput::Custom(Box::new(SceneTitleStyle)))
-        .size(26)
-        .padding(10)
-        .width(Length::Fixed(250.0)),
+        text_input("Scene Title", &state.scene_title_input)
+            .on_input(|s| _message(HeaderMessage::ChangeSceneTitle(s)))
+            .style(theme::TextInput::Custom(Box::new(SceneTitleStyle)))
+            .size(26)
+            .padding(10)
+            .width(Length::Fixed(250.0)),
     )
 }
 

@@ -11,6 +11,7 @@ impl text_input::StyleSheet for SceneTitleStyle {
             border_radius: 0.0,
             border_width: 0.0,
             border_color: Color::TRANSPARENT,
+            icon_color: Color::TRANSPARENT,
         }
     }
 
@@ -32,5 +33,13 @@ impl text_input::StyleSheet for SceneTitleStyle {
 
     fn selection_color(&self, _style: &Self::Style) -> iced::Color {
         Color::from_rgb8(64, 64, 64)
+    }
+
+    fn disabled(&self, style: &Self::Style) -> text_input::Appearance {
+        self.active(style)
+    }
+
+    fn disabled_color(&self, _style: &Self::Style) -> Color {
+        Color::from_rgba8(54, 54, 54, 0.8)
     }
 }

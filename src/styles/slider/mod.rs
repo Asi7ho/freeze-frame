@@ -1,5 +1,5 @@
 use iced::{
-    widget::slider::{self, Handle, HandleShape},
+    widget::slider::{self, Handle, HandleShape, Rail},
     Color, Theme,
 };
 
@@ -10,10 +10,13 @@ impl slider::StyleSheet for SliderStyle {
 
     fn active(&self, _style: &Self::Style) -> slider::Appearance {
         slider::Appearance {
-            rail_colors: (
-                Color::from_rgb8(187, 182, 197),
-                Color::from_rgb8(187, 182, 197),
-            ),
+            rail: Rail {
+                colors: (
+                    Color::from_rgb8(187, 182, 197),
+                    Color::from_rgb8(187, 182, 197),
+                ),
+                width: 1.0,
+            },
             handle: Handle {
                 shape: HandleShape::Circle { radius: 8.0 },
                 color: Color::from_rgb8(187, 182, 197),
